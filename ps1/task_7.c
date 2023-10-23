@@ -10,6 +10,10 @@ void takeAllItems() {
     pick_beeper();
 }
 
+void stepUntilWall() {
+  while (front_is_clear()) { step(); }
+}
+
 void turnEast() { while (!facing_east()) { turn_left(); }} // >
 void turnNorth() { while (!facing_north()) { turn_left(); }} // ^
 void turnWest() { while (!facing_west()) { turn_left(); }} // <
@@ -22,10 +26,6 @@ void turnBack() {
 
 void turnRight() {
   loop(3) { turn_left(); }
-}
-
-void stepUntilWall() {
-  while (front_is_clear()) {step();}
 }
 
 void stepAndCollect() {
@@ -103,7 +103,7 @@ void checkEntrances() { // req dir. = 0 | out dir. = 0
     step();
     return;
   }
-  loop(2) { put_beeper(); }
+  loop(2) {put_beeper();}
   wallRunnerRight();
   turnSouth();
   if (front_is_clear()) {
@@ -150,8 +150,8 @@ void roomChecker() {
     }
 
     turnBack();
-    while (!(beepers_present() && right_is_clear())) {
-      if (!beepers_present() && !front_is_clear())
+    while (!(beepers_present() && right_is_clear())) { // ?
+      if (!front_is_clear())
         return;
       step();
     }
@@ -161,7 +161,7 @@ void roomChecker() {
 
 int main() {
   turn_on("task_7.kw");
-  set_step_delay(20);
+  set_step_delay(10);
   roomChecker();
   cleanUp();
   turn_off();
