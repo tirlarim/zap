@@ -1,4 +1,5 @@
-#include "superkarel.h"
+#include <stdio.h>
+#include <superkarel.h>
 
 void dropAllItems() {
   while (beepers_in_bag())
@@ -37,63 +38,97 @@ void stepAndCollect() {
 }
 
 void goToStartPos() {
+  turnEast();
   stepUntilWall();
-  turnRight();
+  turnWest();
   stepUntilWall();
-  turnRight();
+  turnNorth();
+  while (!beepers_present()) step();
+  turnEast();
   stepUntilWall();
-  turnRight();
-  stepUntilWall();
-  turnRight();
+  turnBack();
 }
 
 void validateDirection() {
   turnEast();
 }
 
-void validateEndPosition() {
-  turnEast();
-  loop(3) {
+void markStartPosition() {
+  turnSouth(); // v
+  stepUntilWall();
+  while (true) {
+    turnEast(); // >
+    while (front_is_clear() && !beepers_present()) {
+      step();
+    }
+    if (beepers_present()) {
+      pick_beeper();
+      turnNorth();
+      stepUntilWall();
+      turnWest();
+      stepUntilWall();
+      put_beeper();
+      break;
+    }
+    turnBack();
     stepUntilWall();
-    turnRight();
+    turnNorth();
+    step();
   }
+  validateDirection();
+}
+
+void validateEndPosition() {
+  takeAllItems();
+  turnEast();
+  stepUntilWall();
   turnBack();
-  step();
+  while (front_is_clear() && (!beepers_present())) step();
+  turnSouth();
+  while (front_is_clear() && beepers_present()) step();
+  put_beeper();
+  stepUntilWall();
+  turnBack();
+  stepUntilWall();
+  turnWest();
+  stepUntilWall();
   validateDirection();
 }
 
 void verifyVertical() {
   turnNorth();
-  loop(3) {
-    stepUntilWall();
-    turnRight();
-  }
+  while (!beepers_present()) step();
+  turnRight();
+  stepUntilWall();
+  turnWest(); // <|
+
+
   while (true) {
-    while (left_is_blocked()) { step(); }
-    turn_left();
-    step();
-    while (!beepers_present() && front_is_clear()) { step(); }
-    if (!front_is_clear()) {
-      turnBack();
-      stepUntilWall();
-      turn_left();
-      if (!front_is_clear()) { break; }
+    while (front_is_clear() && (right_is_blocked() || !beepers_present())) {
       step();
-      turn_left();
-      stepUntilWall();
-      turnRight();
-    } else {
-      if (beepers_present()) {
-        takeAllItems();
-        turnRight();
-        step();
-        while (front_is_clear() && beepers_present()) {
+    }
+    if (!front_is_clear()) {
+      break;
+    }
+    if (beepers_present() && !right_is_blocked()) {
+      while (true) {
+        if (beepers_present()) {
+          pick_beeper();
+        } else break;
+        do {
           step();
-        }
-        dropAllItems();
-        goToStartPos();
+        } while (front_is_clear() && beepers_present());
+        if (beepers_in_bag()) put_beeper();
+        turnBack();
+        while (beepers_present()) step();
+        turnRight();
+        if (front_is_clear()) {
+          step();
+          turnWest();
+        } else break;
       }
     }
+    goToStartPos();
   }
 }
 
@@ -103,11 +138,8 @@ void verifyHorizontal() {
       step();
       if (!beepers_in_bag() && beepers_present()) {
         pick_beeper();
-        if (front_is_clear()) { step(); }
-        else {
-          dropAllItems();
-          break;
-        }
+        if (front_is_clear()) {step();}
+        else {dropAllItems();break;}
       }
       if (beepers_in_bag() && !beepers_present()) {
         put_beeper();
@@ -119,11 +151,11 @@ void verifyHorizontal() {
       }
     }
     turnBack();
-    while (beepers_present()) { step(); }
-    if (beepers_in_bag()) { dropAllItems(); }
+    while (beepers_present()) {step();}
+    if (beepers_in_bag()) {dropAllItems();}
     stepUntilWall();
     turn_left();
-    if (!front_is_clear()) { break; }
+    if (!front_is_clear()) {break;}
     step();
     turn_left();
   }
@@ -132,7 +164,9 @@ void verifyHorizontal() {
 
 int main() {
   turn_on("task_3.kw");
-  set_step_delay(20);
+  set_step_delay(10);
+  validateDirection();
+  markStartPosition();
   validateDirection();
   verifyHorizontal();
   verifyVertical();
