@@ -55,43 +55,67 @@ void validateDirection() {
 void markStartPosition() {
   turnSouth(); // v
   stepUntilWall();
-  while (true) {
-    turnEast(); // >
-    while (front_is_clear() && !beepers_present()) {
-      step();
-    }
-    if (beepers_present()) {
-      pick_beeper();
-      turnNorth();
-      stepUntilWall();
-      turnWest();
-      stepUntilWall();
-      put_beeper();
-      break;
-    }
-    turnBack();
-    stepUntilWall();
-    turnNorth();
-    step();
+  turnEast();
+  stepUntilWall();
+  turnNorth();
+  while (!beepers_present()) step();
+  while (beepers_present() && front_is_clear()) step();
+  if (!beepers_present()) {
+    turnBack(); step();
   }
+  turnWest();
+  while (beepers_present() && front_is_clear()) step();
+  if (!beepers_present()) {
+    turnBack(); step(); pick_beeper(); turnWest();
+  }
+  stepUntilWall();
+  dropAllItems();
   validateDirection();
 }
 
 void validateEndPosition() {
   takeAllItems();
   turnEast();
-  stepUntilWall();
-  turnBack();
-  while (front_is_clear() && (!beepers_present())) step();
-  turnSouth();
-  while (front_is_clear() && beepers_present()) step();
-  put_beeper();
-  stepUntilWall();
-  turnBack();
-  stepUntilWall();
-  turnWest();
+  while (!beepers_present()) step();
+  turnBack(); step();
+  dropAllItems();
   stepUntilWall();
   validateDirection();
+}
+
+void checkEnd() {
+  while (!beepers_present()) step();
+  if (!left_is_blocked()) {
+    while (true) {
+      turnWest();
+      if (beepers_present()) {
+        pick_beeper();
+      } else {
+        turnNorth();
+        stepUntilWall();
+        turn_left(); step(); turn_left();
+        while (!beepers_present() && front_is_clear()) step();
+        if (!front_is_clear()) break;
+        if (beepers_present()) continue;
+      }
+      do {
+        step();
+      } while (front_is_clear() && beepers_present());
+      if (beepers_in_bag()) put_beeper();
+      turnBack();
+      while (beepers_present()) step();
+      turnRight();
+      if (front_is_clear()) step();
+      else break;
+    }
+    turnEast();
+    step();
+    turnSouth();
+    step();
+  }
+  turnWest();
+  stepUntilWall();
+  turnEast();
 }
 
 void verifyVertical() {
@@ -160,16 +184,18 @@ void verifyHorizontal() {
   }
 }
 
-
+// ./arenaMaps/3-6.kw
+// task_3.kw
 int main() {
   turn_on("task_3.kw");
   set_step_delay(10);
   validateDirection();
-  markStartPosition();
-  validateDirection();
   verifyHorizontal();
+  validateDirection();
+  markStartPosition();
   verifyVertical();
   validateEndPosition();
+  checkEnd();
   turn_off();
   return 0;
 }
