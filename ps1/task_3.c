@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <superkarel.h>
+#include "superkarel.h"
 
 void dropAllItems() {
   while (beepers_in_bag())
