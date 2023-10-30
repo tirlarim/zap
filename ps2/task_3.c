@@ -30,6 +30,6 @@ int bank_notes(int price) {
 }
 
 int main() {
-  printf("%d\n", bank_notes(-50));
+//  printf("%d\n", bank_notes(-50));
   return 0;
 }
