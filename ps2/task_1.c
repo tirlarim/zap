@@ -11,6 +11,6 @@ double lift_a_car(double leverLen, double humanWeight, double carWeight) {
 }
 
 int main() {
-  printf("%.4f\n", lift_a_car(2, 80, 1400));
+//  printf("%.4f\n", lift_a_car(2, 80, 1400));
   return 0;
 }
