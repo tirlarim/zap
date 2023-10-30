@@ -68,7 +68,7 @@ int find_missing_number(unsigned int arrSize, int* array) { // blyat, why do not
 }
 
 int main() {
-  int input_array[] = {3,0,1};
-  printf("%d\n", find_missing_number(3,input_array));
+//  int input_array[] = {3,0,1};
+//  printf("%d\n", find_missing_number(3,input_array));
   return 0;
 }
