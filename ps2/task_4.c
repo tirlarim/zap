@@ -43,6 +43,6 @@ unsigned int euler(int n) {
 }
 
 int main() {
-  printf("%d\n", euler(12));
+//  printf("%d\n", euler(12));
   return 0;
 }
