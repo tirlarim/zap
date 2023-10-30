@@ -105,6 +105,6 @@ unsigned long sum_squared(unsigned int n) {
 
 
 int main() {
-  printf("%lu\n", sum_squared(33));
+//  printf("%lu\n", sum_squared(33));
   return 0;
 }
