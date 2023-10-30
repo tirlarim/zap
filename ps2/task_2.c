@@ -15,6 +15,6 @@ double unit_price(double price, unsigned int rollsCount, unsigned int piecesCoun
 }
 
 int main() {
-  printf("%.4f\n", unit_price(5.63, 20, 200));
+//  printf("%.4f\n", unit_price(5.63, 20, 200));
   return 0;
 }
