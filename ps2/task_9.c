@@ -157,12 +157,12 @@ void podium(int n, int* arr) {
 
 
 int main() {
-  int heights[3];
-  int material = 6;
-  podium(material, heights);
-  for(int i = 0; i < 3; i++){
-    printf("%d ", heights[i]);
-  }
-  printf("\n");
+//  int heights[3];
+//  int material = 6;
+//  podium(material, heights);
+//  for(int i = 0; i < 3; i++){
+//    printf("%d ", heights[i]);
+//  }
+//  printf("\n");
   return 0;
 }

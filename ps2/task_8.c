@@ -149,20 +149,8 @@ unsigned int factorize_count(int n) {
   return primeNumbersIndex;
 }
 
-void podium(int n, int* arr) {
-  arr[2] = 1;
-  arr[0] = 2;
-  arr[1] = n-3;
-}
-
 
 int main() {
-  int heights[3];
-  int material = 6;
-  podium(material, heights);
-  for(int i = 0; i < 3; i++){
-    printf("%d ", heights[i]);
-  }
-  printf("\n");
+  printf("%d\n", factorize_count(12));
   return 0;
 }

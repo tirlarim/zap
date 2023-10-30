@@ -69,8 +69,7 @@ int find_missing_number(unsigned int arrSize, int *array) { // blyat, why do not
 
 #define PASCAL_TRIANGLE_MAX_SIZE 100
 
-void
-generatePascalTriangle(unsigned int n, unsigned long triangle[PASCAL_TRIANGLE_MAX_SIZE][PASCAL_TRIANGLE_MAX_SIZE]) {
+void generatePascalTriangle(unsigned int n, unsigned long triangle[PASCAL_TRIANGLE_MAX_SIZE][PASCAL_TRIANGLE_MAX_SIZE]) {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j <= i; ++j) {
       if (n == j || j == 0) {
@@ -104,65 +103,23 @@ unsigned long sum_squared(unsigned int n) {
   return sum;
 }
 
-int array_min(unsigned int n, int *array) {
+int array_min(unsigned int n, int* array) {
   if (!array) return -1;
   int buffer = array[0];
-  for (int i = 1; i < n; ++i) { if (array[i] < buffer) buffer = array[i]; }
+  for (int i = 1; i < n; ++i) {if (array[i] < buffer) buffer = array[i];}
   return buffer;
 }
 
-int array_max(int *array, unsigned int n) {
+int array_max(int* array, unsigned int n) {
   if (!array) return -1;
   int buffer = array[0];
-  for (int i = 1; i < n; ++i) { if (array[i] > buffer) buffer = array[i]; }
+  for (int i = 1; i < n; ++i) {if (array[i] > buffer) buffer = array[i];}
   return buffer;
-}
-
-#define PRIME_NUMBERS_ARR_SIZE 100
-#define DIVIDERS_NUMBERS_ARR_SIZE 100
-
-unsigned int factorize_count(int n) {
-  if (n < 0) n *= -1;
-  unsigned int dividersArr[DIVIDERS_NUMBERS_ARR_SIZE], dividersIndex = 0;
-  unsigned int primeNumbersArr[PRIME_NUMBERS_ARR_SIZE], primeNumbersIndex = 0;
-  for (int i = 1; i < n; ++i) {
-    if (n % i == 0) dividersArr[dividersIndex++] = i;
-  }
-  for (int i = 0; i < dividersIndex; ++i) {
-    unsigned char isPrime = 1;
-    for (int j = 2; j < dividersArr[i]; ++j) {
-      if (dividersArr[i] % j == 0) {
-        isPrime = 0;
-        break;
-      }
-    }
-    if (isPrime && dividersArr[i] != 1) primeNumbersArr[primeNumbersIndex++] = dividersArr[i];
-  }
-//  for (int i = 0; i < dividersIndex; ++i) {
-//    printf("%d ", dividersArr[i]);
-//  }
-//  printf("\n");
-//  for (int i = 0; i < primeNumbersIndex; ++i) {
-//    printf("%d ", primeNumbersArr[i]);
-//  }
-//  printf("\n");
-  return primeNumbersIndex;
-}
-
-void podium(int n, int* arr) {
-  arr[2] = 1;
-  arr[0] = 2;
-  arr[1] = n-3;
 }
 
 
 int main() {
-  int heights[3];
-  int material = 6;
-  podium(material, heights);
-  for(int i = 0; i < 3; i++){
-    printf("%d ", heights[i]);
-  }
-  printf("\n");
+//  int input_array[] = {1,2,3,4,5};
+//  printf("%d\n", array_max(NULL, 5));
   return 0;
 }
