@@ -125,7 +125,7 @@ unsigned int factorize_count(int n) {
   if (n < 0) n *= -1;
   unsigned int dividersArr[DIVIDERS_NUMBERS_ARR_SIZE], dividersIndex = 0;
   unsigned int primeNumbersIndex = 0;
-  for (int i = 1; i < n; ++i) {
+  for (int i = 1; i <= n; ++i) {
     if (n % i == 0) dividersArr[dividersIndex++] = i;
   }
   for (int i = 0; i < dividersIndex; ++i) {
@@ -149,8 +149,8 @@ void podium(int n, int* arr) {
 
 
 int main() {
-//  for (int i = 0; i < 200; ++i) {
-//    printf("%d -> %d\n",i, factorize_count(i));
-//  }
+  for (int i = 0; i < 200; ++i) {
+    printf("%d -> %d\n",i, factorize_count(i));
+  }
   return 0;
 }
