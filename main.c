@@ -6,8 +6,8 @@ double roundTo(double n, unsigned char precision) {
   return round(a * n) / a;
 }
 
-double lift_a_car(double leverLen, double humanWeight, double carWeight) {
-  return roundTo((humanWeight * leverLen) / (carWeight + humanWeight), 2);
+double lift_a_car(int leverLen, int humanWeight, int carWeight) {
+  return roundTo((double)(humanWeight * leverLen) / (carWeight + humanWeight), 2);
 }
 
 double unit_price(double price, unsigned int rollsCount, unsigned int piecesCount) {
@@ -118,7 +118,6 @@ int array_max(int *array, unsigned int n) {
   return buffer;
 }
 
-#define PRIME_NUMBERS_ARR_SIZE 100
 #define DIVIDERS_NUMBERS_ARR_SIZE 100
 
 unsigned int factorize_count(int n) {
@@ -149,8 +148,5 @@ void podium(int n, int* arr) {
 
 
 int main() {
-//  for (int i = 0; i < 200; ++i) {
-//    printf("%d -> %d\n",i, factorize_count(i));
-//  }
   return 0;
 }
