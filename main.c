@@ -149,8 +149,8 @@ void podium(int n, int* arr) {
 
 
 int main() {
-  for (int i = 0; i < 200; ++i) {
-    printf("%d -> %d\n",i, factorize_count(i));
-  }
+//  for (int i = 0; i < 200; ++i) {
+//    printf("%d -> %d\n",i, factorize_count(i));
+//  }
   return 0;
 }
