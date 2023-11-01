@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <math.h>
 
-double roundTo(double n, unsigned char precision) {
-  int a = (int)pow(10, precision);
-  return round(a * n) / a;
+float roundTo(float n, unsigned char precision) {
+  float a = powf(10, precision);
+  return roundf(a * n) / a;
 }
 
-double lift_a_car(int leverLen, int humanWeight, int carWeight) {
-  return roundTo((double)(humanWeight * leverLen) / (carWeight + humanWeight), 2);
+float lift_a_car(int leverLen, int humanWeight, int carWeight) {
+  return roundTo((float)(humanWeight * leverLen) / (float)(carWeight + humanWeight), 2);
 }
 
-double unit_price(double price, unsigned int rollsCount, unsigned int piecesCount) {
-  return roundTo(price / (rollsCount * piecesCount) * 100, 2);
+float unit_price(float price, unsigned int rollsCount, unsigned int piecesCount) {
+  return roundTo(price / (float)(rollsCount * piecesCount) * 100, 2);
 }
 
 #define BANKNOTES_TYPES_COUNT 5
@@ -59,7 +59,7 @@ void sortArray(int *array, unsigned int n) {
   }
 }
 
-int find_missing_number(unsigned int arrSize, int *array) { // blyat, why do not use unsigned int* array
+int find_missing_number(int *array, unsigned int arrSize) { // blyat, why do not use unsigned int* array
   sortArray(array, arrSize);
   for (int i = 1; i < arrSize; ++i) {
     if (array[i] != array[i - 1] + 1) return array[i - 1] + 1;
@@ -104,7 +104,7 @@ unsigned long sum_squared(unsigned int n) {
   return sum;
 }
 
-int array_min(unsigned int n, int *array) {
+int array_min(int *array, unsigned int n) {
   if (!array) return -1;
   int buffer = array[0];
   for (int i = 1; i < n; ++i) { if (array[i] < buffer) buffer = array[i]; }
@@ -148,5 +148,6 @@ void podium(int n, int* arr) {
 
 
 int main() {
+  printf("%.5f\n", lift_a_car(2, 80, 1400));
   return 0;
 }
