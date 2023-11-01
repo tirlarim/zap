@@ -141,13 +141,18 @@ unsigned int factorize_count(int n) {
 }
 
 void podium(int n, int* arr) {
-  arr[2] = 1;
-  arr[0] = 2;
-  arr[1] = n-3;
+  int buffer = n;
+  while (n%3 != 0) {n++;}
+  n /= 3;
+  arr[0] = n;
+  arr[1] = n+1;
+  arr[2] = buffer-(2*n+1);
+//  for (int i = 0; i < 3; ++i) {
+//    printf("%d\n", arr[i]);
+//  }
 }
 
 
 int main() {
-  printf("%.5f\n", lift_a_car(2, 80, 1400));
   return 0;
 }
