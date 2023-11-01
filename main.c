@@ -148,6 +148,6 @@ void podium(int n, int* arr) {
 
 
 int main() {
-//  printf("%.5f\n", lift_a_car(2, 80, 1400));
+  printf("%.5f\n", lift_a_car(2, 80, 1400));
   return 0;
 }
