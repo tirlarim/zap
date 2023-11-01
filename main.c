@@ -6,8 +6,8 @@ float roundTo(float n, unsigned char precision) {
   return roundf(a * n) / a;
 }
 
-float lift_a_car(int leverLen, int humanWeight, int carWeight) {
-  return roundTo((float)(humanWeight * leverLen) / (float)(carWeight + humanWeight), 2);
+float lift_a_car(float leverLen, float humanWeight, float carWeight) {
+  return roundTo((humanWeight * leverLen) / (carWeight + humanWeight), 2);
 }
 
 float unit_price(float price, unsigned int rollsCount, unsigned int piecesCount) {
@@ -60,7 +60,22 @@ void sortArray(int *array, unsigned int n) {
 }
 
 int find_missing_number(int *array, unsigned int arrSize) { // blyat, why do not use unsigned int* array
-  sortArray(array, arrSize);
+//  sortArray(array, arrSize);
+  char isSorted = 1;
+  for (int i = 1; i < arrSize; ++i) {
+    int buffer;
+    if (array[i] < array[i - 1]) {
+      isSorted = 0;
+      buffer = array[i - 1];
+      array[i - 1] = array[i];
+      array[i] = buffer;
+    }
+    if (i == arrSize - 1 && !isSorted) {
+      i = 1;
+      isSorted = 1;
+    }
+  }
+
   for (int i = 1; i < arrSize; ++i) {
     if (array[i] != array[i - 1] + 1) return array[i - 1] + 1;
   }
@@ -69,8 +84,7 @@ int find_missing_number(int *array, unsigned int arrSize) { // blyat, why do not
 
 #define PASCAL_TRIANGLE_MAX_SIZE 100
 
-void
-generatePascalTriangle(unsigned int n, unsigned long triangle[PASCAL_TRIANGLE_MAX_SIZE][PASCAL_TRIANGLE_MAX_SIZE]) {
+void generatePascalTriangle(unsigned int n, unsigned long triangle[PASCAL_TRIANGLE_MAX_SIZE][PASCAL_TRIANGLE_MAX_SIZE]) {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j <= i; ++j) {
       if (n == j || j == 0) {
@@ -140,19 +154,21 @@ unsigned int factorize_count(int n) {
   return primeNumbersIndex;
 }
 
-void podium(int n, int* arr) {
+void podium(int n, int *arr) {
   int buffer = n;
-  while (n%3 != 0) {n++;}
+  while (n % 3 != 0) { n++; }
   n /= 3;
   arr[0] = n;
-  arr[1] = n+1;
-  arr[2] = buffer-(2*n+1);
-//  for (int i = 0; i < 3; ++i) {
-//    printf("%d\n", arr[i]);
-//  }
+  arr[1] = n + 1;
+  arr[2] = buffer - (2 * n + 1);
 }
 
 
 int main() {
+//  int input_array[] = {5, 0, 2, 3, 4, 6, 7, 8,
+//                       9, 10, 11, 12, 13, 14, 15,
+//                       16, 17, 18, 19, 20, 21, 22};
+//  int array_size = 22;
+//  printf("%d\n", find_missing_number(input_array, array_size));
   return 0;
 }
