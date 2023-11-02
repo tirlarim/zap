@@ -59,11 +59,10 @@ void sortArray(int *array, unsigned int n) {
   }
 }
 
-int find_missing_number(int *array, int arrSize) {
-  int min = array[0], max = array[0];
+int find_missing_number(int arrSize, int *array) {
+  int max = array[0];
   for (int i = 1; i < arrSize; ++i) {
     if (array[i] > max) max = array[i];
-    if (array[i] < min) min = array[i];
   }
   for (int i = 0; i < arrSize; ++i) {
     unsigned char flag = 1;
