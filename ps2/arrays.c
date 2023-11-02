@@ -6,8 +6,8 @@ float roundTo(float n, unsigned char precision) {
   return roundf(a * n) / a;
 }
 
-float lift_a_car(float leverLen, float humanWeight, float carWeight) {
-  return roundTo((humanWeight * leverLen) / (carWeight + humanWeight), 2);
+float lift_a_car(float leverLen, int humanWeight, int carWeight) {
+  return roundTo(((float)humanWeight * leverLen) / (float)(carWeight + humanWeight), 2);
 }
 
 float unit_price(float price, unsigned int rollsCount, unsigned int piecesCount) {
@@ -20,7 +20,7 @@ int bank_notes(int price) {
   if ((price < 0) || (price % 10)) return -1;
   unsigned int banknotesTypes[BANKNOTES_TYPES_COUNT] = {10, 20, 50, 100, 200};
   unsigned int ans = 0;
-  for (int i = BANKNOTES_TYPES_COUNT; i > 0; --i) {
+  for (int i = BANKNOTES_TYPES_COUNT; i >= 0; --i) {
     while (price >= banknotesTypes[i]) {
       price -= (int)banknotesTypes[i];
       ans += 1;
@@ -59,25 +59,23 @@ void sortArray(int *array, unsigned int n) {
   }
 }
 
-int find_missing_number(int *array, unsigned int arrSize) { // blyat, why do not use unsigned int* array
-//  sortArray(array, arrSize);
-  char isSorted = 1;
+int find_missing_number(int *array, int arrSize) {
+  int min = array[0], max = array[0];
   for (int i = 1; i < arrSize; ++i) {
-    int buffer;
-    if (array[i] < array[i - 1]) {
-      isSorted = 0;
-      buffer = array[i - 1];
-      array[i - 1] = array[i];
-      array[i] = buffer;
-    }
-    if (i == arrSize - 1 && !isSorted) {
-      i = 1;
-      isSorted = 1;
-    }
+    if (array[i] > max) max = array[i];
+    if (array[i] < min) min = array[i];
   }
-
-  for (int i = 1; i < arrSize; ++i) {
-    if (array[i] != array[i - 1] + 1) return array[i - 1] + 1;
+  for (int i = 0; i < arrSize; ++i) {
+    unsigned char flag = 1;
+    for (int j = 0; j < arrSize; ++j) {
+      if (array[j] == array[i]+1) {
+        flag = 0;
+        break;
+      }
+    }
+    if (flag) {
+      if (array[i] != max) {return array[i]+1;}
+    }
   }
   return -1;
 }
@@ -166,8 +164,8 @@ void podium(int n, int *arr) {
 
 int main() {
 //  int input_array[] = {5, 0, 2, 3, 4, 6, 7, 8,
-//                       9, 10, 11, 12, 13, 14, 15,
-//                       16, 17, 18, 19, 20, 21, 22};
+//                       9, 10, 20, 13, 12, 14, 15,
+//                       16, 17, 18, 19, 21, 22, 1};
 //  int array_size = 22;
 //  printf("%d\n", find_missing_number(input_array, array_size));
   return 0;
