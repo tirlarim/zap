@@ -6,7 +6,7 @@ float roundTo(float n, unsigned char precision) {
   return roundf(a * n) / a;
 }
 
-float lift_a_car(float leverLen, int humanWeight, int carWeight) {
+float lift_a_car(int leverLen, int humanWeight, int carWeight) {
   return roundTo(((float)humanWeight * leverLen) / (float)(carWeight + humanWeight), 2);
 }
 
@@ -60,10 +60,9 @@ void sortArray(int *array, unsigned int n) {
 }
 
 int find_missing_number(int *array, int arrSize) {
-  int min = array[0], max = array[0];
+  int max = array[0];
   for (int i = 1; i < arrSize; ++i) {
     if (array[i] > max) max = array[i];
-    if (array[i] < min) min = array[i];
   }
   for (int i = 0; i < arrSize; ++i) {
     unsigned char flag = 1;

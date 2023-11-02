@@ -6,7 +6,7 @@ float roundTo(float n, unsigned char precision) {
   return roundf(a * n) / a;
 }
 
-float lift_a_car(float leverLen, int humanWeight, int carWeight) {
+float lift_a_car(int leverLen, int humanWeight, int carWeight) {
   return roundTo(((float)humanWeight * leverLen) / (float)(carWeight + humanWeight), 2);
 }
 
@@ -163,10 +163,10 @@ void podium(int n, int *arr) {
 
 
 int main() {
-  int input_array[] = {5, 0, 2, 3, 4, 6, 7, 8,
-                       9, 10, 20, 13, 12, 14, 15,
-                       16, 17, 18, 19, 21, 22, 1};
-  int array_size = 22;
-  printf("%d\n", find_missing_number(input_array, array_size));
+//  int input_array[] = {5, 0, 2, 3, 4, 6, 7, 8,
+//                       9, 10, 20, 13, 12, 14, 15,
+//                       16, 17, 18, 19, 21, 22, 1};
+//  int array_size = 22;
+//  printf("%d\n", find_missing_number(input_array, array_size));
   return 0;
 }
