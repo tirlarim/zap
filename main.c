@@ -162,10 +162,53 @@ void podium(int n, int *arr) {
 
 
 int main() {
-//  int input_array[] = {5, 0, 2, 3, 4, 6, 7, 8,
-//                       9, 10, 20, 13, 12, 14, 15,
-//                       16, 17, 18, 19, 21, 22, 1};
-//  int array_size = 22;
-//  printf("%d\n", find_missing_number(input_array, array_size));
+  printf("%.4f\n", lift_a_car(2, 80, 1400));
+// prints: 0.1100
+  printf("%.4f\n", lift_a_car(4, 90, 1650));
+// prints: 0.2100
+  printf("%.4f\n", unit_price(4.79, 16, 150));
+// prints: 0.2000
+  printf("%.4f\n", unit_price(5.63, 20, 200));
+// prints: 0.1400
+  printf("%d\n", bank_notes(540));
+// prints: 5
+  printf("%d\n", bank_notes(5));
+// prints: -1
+  printf("%d\n", euler(6));
+// prints: 2
+  printf("%d\n", euler(12));
+// prints: 4
+  int input_array1[] = {3,0,1};
+  printf("%d\n", find_missing_number(3,input_array1));
+// prints: 2
+  printf("%lu\n", sum_squared(1));
+// prints: 2
+  printf("%lu\n", sum_squared(4));
+// prints: 70
+  printf("%lu\n", sum_squared(33));
+// prints: 7219428434016265740
+  int input_array2[] = {1,2,3,4,5};
+  printf("%d\n", array_min(input_array2, 5));
+// prints: 1
+  printf("%d\n", array_max(input_array2, 5));
+// prints: 5
+  printf("%d\n", array_max(NULL, 5));
+// prints: -1
+  printf("%d\n", factorize_count(12));
+// prints: 2
+  int heights[3];
+  int material = 6;
+  podium(material, heights);
+
+  for(int i = 0; i < 3; i++){
+    printf("%d ", heights[i]);
+  }
+  printf("\n");
+// prints: 2 3 1
   return 0;
 }
+
+
+// you
+// will
+// suffer
