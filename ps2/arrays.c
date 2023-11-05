@@ -76,7 +76,7 @@ int find_missing_number(int arrSize, int *array) {
       if (array[i] != max) {return array[i]+1;}
     }
   }
-  return -1;
+  return max+1;
 }
 
 #define PASCAL_TRIANGLE_MAX_SIZE 100
@@ -162,10 +162,5 @@ void podium(int n, int *arr) {
 
 
 int main() {
-//  int input_array[] = {5, 0, 2, 3, 4, 6, 7, 8,
-//                       9, 10, 20, 13, 12, 14, 15,
-//                       16, 17, 18, 19, 21, 22, 1};
-//  int array_size = 22;
-//  printf("%d\n", find_missing_number(input_array, array_size));
   return 0;
 }
