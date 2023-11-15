@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include "./hangman.h"
+
+long getFileSize(FILE* fp) {
+  long size;
+  fseek(fp, 0, SEEK_END);
+  size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+  return size;
+}
+
+unsigned long get_word(char* buffer) {
+  long fileSize;
+  unsigned long wordLen = 0;
+  FILE* fp = fopen(WORDLIST_FILENAME, "r");
+  if (fp == NULL) {
+    fprintf(stderr, "No such file or directory: %s\n", WORDLIST_FILENAME);
+    return wordLen;
+  }
+  fileSize = getFileSize(fp);
+  while (!*buffer) {
+    fseek(fp, (rand() % fileSize) + 1, SEEK_SET);
+    fscanf(fp, "%*s %s", buffer);
+    wordLen = strlen(buffer);
+  }
+  fclose(fp);
+  return wordLen;
+}
+
+unsigned char is_word_guessed(const char* secretWord, const char* lettersGuessed) {
+  unsigned long secretWordLen = strlen(secretWord), lettersGuessedLen = strlen(lettersGuessed);
+  for (int i = 0; i < secretWordLen; ++i) {
+    bool findSymbol = false;
+    for (int j = 0; j < lettersGuessedLen; ++j) {
+      if (secretWord[i] == lettersGuessed[j]) {
+        findSymbol = true;
+        break;
+      }
+    }
+    if (!findSymbol) return 0;
+  }
+  return 1;
+}
+
+void get_guessed_word(const char* secretWord, const char* lettersGuessed, char* wordGuessed) {
+  unsigned long secretWordLen = strlen(secretWord), lettersGuessedLen = strlen(lettersGuessed);
+  memset(wordGuessed, '_', secretWordLen*sizeof(char));
+  for (int i = 0; i < secretWordLen; ++i) {
+    bool findSymbol = false;
+    for (int j = 0; j < lettersGuessedLen; ++j) {
+      if (secretWord[i] == lettersGuessed[j]) {
+        findSymbol = true;
+        break;
+      }
+    }
+    if (findSymbol)
+      wordGuessed[i] = secretWord[i];
+  }
+}
+
+void normalizeWord(char* letter) {
+  unsigned long wordLen = strlen(letter);
+  for (int i = 0; i < wordLen; ++i) {
+    if (letter[i] >= 65 && letter[i] <= 90)
+     letter+=32;
+  }
+}
+
+bool isLetterInWord(const char* secretWord, char letter) {
+  unsigned long secretWordLen = strlen(secretWord)+1;
+  for (int i = 0; i < secretWordLen; ++i) {
+    if (secretWord[i] == letter) return true;
+  }
+  return false;
+}
+
+bool isSymbolValid(char letter) {
+  return letter <= 'z' && letter >= 'a' ? true : false;
+}
+
+bool isSymbolNew(const char* lettersGuessed, char letter) {
+  unsigned long lettersGuessedLen = strlen(lettersGuessed);
+  for (int i = 0; i < lettersGuessedLen; ++i) {
+    if (lettersGuessed[i] == letter) return false;
+  }
+  return true;
+}
+
+void get_available_letters(const char* lettersGuessed, char* lettersAvailable) {
+  unsigned long lettersGuessedLen = strlen(lettersGuessed), lettersAvailableIndex = 0;
+  memset(lettersAvailable, '\0', (LETTERS_COUNT+1)*sizeof(char));
+  for (int i = 'a'; i <= 'z'; ++i) {
+    bool findSymbol = false;
+    for (int j = 0; j < lettersGuessedLen; ++j) {
+      if (i == lettersGuessed[j]) {
+        findSymbol = true;
+        break;
+      }
+    }
+    if (!findSymbol) lettersAvailable[lettersAvailableIndex++] = (char)i;
+  }
+}
+
+
+void tickInput(char* input, const char* secretWord, char* currentWord, char* lettersGuessed,
+               unsigned long inputLen, unsigned char* lettersGuessedIndex, unsigned int* tryCount) {
+  memset(input, '\0', inputLen);
+  scanf("%s", input);
+  normalizeWord(input);
+  if (input[1] == '\0') { // input is symbol
+    bool isLetterValid = isSymbolValid(input[0]);
+    bool isLetterNew = isSymbolNew(lettersGuessed, input[0]);
+    if (isLetterValid && isLetterNew) {
+      lettersGuessed[*lettersGuessedIndex] = input[0];
+      get_guessed_word(secretWord, lettersGuessed, currentWord);
+      bool isLetterRight = isLetterInWord(secretWord, lettersGuessed[*lettersGuessedIndex]);
+      --(*tryCount);
+      ++(*lettersGuessedIndex);
+      if (isLetterRight) {
+        printf("Good guess: %s\n-------------\n", currentWord);
+      } else {
+        printf("Oops! That letter is not in my word: %s\n-------------\n", currentWord);
+      }
+    } else {
+      if (!isLetterValid)
+        printf("Oops! '%c' is not a valid letter: %s\n-------------\n", input[0], currentWord);
+      if (!isLetterNew)
+        printf("Oops! You've already guessed that letter: %s\n-------------\n", currentWord);
+    }
+    if (!*tryCount)
+      printf("Sorry, you ran out of guesses. The word was %s.\n", secretWord);
+  } else { // input is word
+    if (!strcmp(secretWord, input)) {
+      strcpy(currentWord, input);
+      *tryCount = 0;
+      printf("Congratulations, you won!\n");
+    } else {
+      *tryCount = 0;
+      printf("Sorry, bad guess. The word was %s.", secretWord);
+    }
+  }
+}
+
+void hangman(const char* secretWord) {
+  unsigned long secretWordLen = strlen(secretWord);
+  unsigned char lettersGuessedIndex = 0;
+  char* currentWord = (char*)malloc((secretWordLen+1)*sizeof(*currentWord));
+  char* inputBuffer = (char*)malloc(WORD_LEN_MAX*sizeof(*inputBuffer));
+  char availableLetters[LETTERS_COUNT+1] = {0}, lettersGuessed[LETTERS_COUNT+1] = {0};
+  memset(currentWord, '_', secretWordLen*sizeof(char));
+  printf("Welcome to the game, Hangman!\n"
+         "I am thinking of a word that is %ld letters long.\n"
+         "-------------\n", secretWordLen);
+  for (unsigned int tryCount = TRY_COUNT_MAX; tryCount && strcmp(currentWord, secretWord) != 0;) {
+    get_available_letters(lettersGuessed, availableLetters);
+    printf("You have %u guesses left.\n"
+           "Available letters: %s\n"
+           "Please guess a letter: ", tryCount, availableLetters);
+    tickInput(inputBuffer, secretWord, currentWord, lettersGuessed, WORD_LEN_MAX, &lettersGuessedIndex, &tryCount);
+  }
+  free(currentWord);
+  free(inputBuffer);
+}
