@@ -59,6 +59,8 @@ void text_to_morse(const char* input, char* output) {
     printf("code index: %d\n", formattedInput[i]-'A'+33);
     printf("code: %s\n", codes[formattedInput[i]-'A'+33]);
 #endif
+    char codeIndex = formattedInput[i]-'A'+33;
+    if (codeIndex < 0 || codeIndex >= SYMBOLS_COUNT) continue;
     strcat(output, codes[formattedInput[i]-'A'+33]);
     if (i+1 < inputLen) strcat(output, " ");
   }
