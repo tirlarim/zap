@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "./utils.h"
 #include "morse.h"
 
 char** getMorseCodes() {
@@ -39,6 +38,13 @@ void destroyMorseTable(char** codes) {
   free(codes);
 }
 
+void uppercase(char* word) {
+  unsigned long wordLen = strlen(word);
+  for (int i = 0; i < wordLen; ++i) {
+    if (word[i] >= 97 && word[i] <= 122)
+      word[i]-=32;
+  }
+}
 
 void text_to_morse(const char* input, char* output) {
   unsigned long inputLen = strlen(input);

@@ -2,8 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "./utils.h"
 #include "./hangman.h"
+
+void lowercase(char* word) {
+  unsigned long wordLen = strlen(word);
+  for (int i = 0; i < wordLen; ++i) {
+    if (word[i] >= 65 && word[i] <= 90)
+      word[i]+=32;
+  }
+}
 
 long getFileSize(FILE* fp) {
   long size;
@@ -109,7 +116,7 @@ void tickInput(char* input, const char* secretWord, char* currentWord, char* let
                unsigned char* lettersGuessedIndex, unsigned int* tryCount, char* wordFormatted) {
   memset(input, '\0', inputLen);
   scanf("%s", input);
-  normalizeWord(input);
+  lowercase(input);
   if (input[1] == '\0') { // input is symbol
     bool isLetterValid = isSymbolValid(input[0]);
     bool isLetterNew = isSymbolNew(lettersGuessed, input[0]);
