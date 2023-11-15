@@ -61,6 +61,13 @@ void get_guessed_word(const char* secretWord, const char* lettersGuessed, char* 
   }
 }
 
+void getFormattedWord(const char* word, char* formattedWord) {
+  unsigned long wordLen = strlen(word);
+  for (int i = 0; i < wordLen; ++i) {
+    formattedWord[i*2] = word[i];
+  }
+}
+
 void normalizeWord(char* letter) {
   unsigned long wordLen = strlen(letter);
   for (int i = 0; i < wordLen; ++i) {
@@ -105,8 +112,8 @@ void get_available_letters(const char* lettersGuessed, char* lettersAvailable) {
 }
 
 
-void tickInput(char* input, const char* secretWord, char* currentWord, char* lettersGuessed,
-               unsigned long inputLen, unsigned char* lettersGuessedIndex, unsigned int* tryCount) {
+void tickInput(char* input, const char* secretWord, char* currentWord, char* lettersGuessed, unsigned long inputLen,
+               unsigned char* lettersGuessedIndex, unsigned int* tryCount, char* wordFormatted) {
   memset(input, '\0', inputLen);
   scanf("%s", input);
   normalizeWord(input);
@@ -116,30 +123,40 @@ void tickInput(char* input, const char* secretWord, char* currentWord, char* let
     if (isLetterValid && isLetterNew) {
       lettersGuessed[*lettersGuessedIndex] = input[0];
       get_guessed_word(secretWord, lettersGuessed, currentWord);
+      getFormattedWord(currentWord, wordFormatted);
       bool isLetterRight = isLetterInWord(secretWord, lettersGuessed[*lettersGuessedIndex]);
       --(*tryCount);
       ++(*lettersGuessedIndex);
       if (isLetterRight) {
-        printf("Good guess: %s\n-------------\n", currentWord);
+        printf("Good guess: %s\n-------------\n", wordFormatted);
       } else {
-        printf("Oops! That letter is not in my word: %s\n-------------\n", currentWord);
+        printf("Oops! That letter is not in my word: %s\n-------------\n", wordFormatted);
       }
     } else {
       if (!isLetterValid)
-        printf("Oops! '%c' is not a valid letter: %s\n-------------\n", input[0], currentWord);
+        printf("Oops! '%c' is not a valid letter: %s\n-------------\n", input[0], wordFormatted);
       if (!isLetterNew)
-        printf("Oops! You've already guessed that letter: %s\n-------------\n", currentWord);
+        printf("Oops! You've already guessed that letter: %s\n-------------\n", wordFormatted);
     }
-    if (!*tryCount)
+    if (is_word_guessed(secretWord, lettersGuessed)) {
+      *tryCount = 0;
+      printf("Congratulations, you won!\n");
+      return;
+    }
+    if (!*tryCount) {
       printf("Sorry, you ran out of guesses. The word was %s.\n", secretWord);
+      return;
+    }
   } else { // input is word
     if (!strcmp(secretWord, input)) {
       strcpy(currentWord, input);
       *tryCount = 0;
       printf("Congratulations, you won!\n");
+      return;
     } else {
       *tryCount = 0;
       printf("Sorry, bad guess. The word was %s.", secretWord);
+      return;
     }
   }
 }
@@ -147,20 +164,25 @@ void tickInput(char* input, const char* secretWord, char* currentWord, char* let
 void hangman(const char* secretWord) {
   unsigned long secretWordLen = strlen(secretWord);
   unsigned char lettersGuessedIndex = 0;
-  char* currentWord = (char*)malloc((secretWordLen+1)*sizeof(*currentWord));
+  unsigned char currentWordSize = (secretWordLen+1)*sizeof(char);
+  char* currentWord = (char*)malloc(currentWordSize);
+  char* wordFormatted = (char*)malloc(currentWordSize*2);
   char* inputBuffer = (char*)malloc(WORD_LEN_MAX*sizeof(*inputBuffer));
   char availableLetters[LETTERS_COUNT+1] = {0}, lettersGuessed[LETTERS_COUNT+1] = {0};
-  memset(currentWord, '_', secretWordLen*sizeof(char));
+  memset(currentWord, '_', currentWordSize-1);
+  memset(wordFormatted, ' ', 2*currentWordSize-1);
   printf("Welcome to the game, Hangman!\n"
          "I am thinking of a word that is %ld letters long.\n"
          "-------------\n", secretWordLen);
-  for (unsigned int tryCount = TRY_COUNT_MAX; tryCount && strcmp(currentWord, secretWord) != 0;) {
+  for (unsigned int tryCount = TRY_COUNT_MAX; tryCount && !is_word_guessed(secretWord, lettersGuessed);) {
     get_available_letters(lettersGuessed, availableLetters);
     printf("You have %u guesses left.\n"
            "Available letters: %s\n"
            "Please guess a letter: ", tryCount, availableLetters);
-    tickInput(inputBuffer, secretWord, currentWord, lettersGuessed, WORD_LEN_MAX, &lettersGuessedIndex, &tryCount);
+    tickInput(inputBuffer, secretWord, currentWord, lettersGuessed,
+              WORD_LEN_MAX, &lettersGuessedIndex, &tryCount, wordFormatted);
   }
   free(currentWord);
+  free(wordFormatted);
   free(inputBuffer);
 }
