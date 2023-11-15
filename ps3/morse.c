@@ -51,7 +51,7 @@ void text_to_morse(const char* input, char* output) {
   char* formattedInput = (char*)malloc(inputLen*sizeof(*formattedInput));
   char** codes = getMorseCodes();
   strcpy(formattedInput, input);
-  memset(output, '\0', MORSE_CODE_LEN*sizeof(char));
+  memset(output, '\0', inputLen*CODE_SIZE*sizeof(char));
   uppercase(formattedInput);
   for (int i = 0; i < inputLen; ++i) {
 #ifdef DEBUG_FLAG
@@ -59,8 +59,10 @@ void text_to_morse(const char* input, char* output) {
     printf("code index: %d\n", formattedInput[i]-'A'+33);
     printf("code: %s\n", codes[formattedInput[i]-'A'+33]);
 #endif
-    char codeIndex = formattedInput[i]-'A'+33;
+    int codeIndex = formattedInput[i]-'A'+33;
+    unsigned long outputIndex = strlen(output);
     if (codeIndex < 0 || codeIndex >= SYMBOLS_COUNT) continue;
+    if (codeIndex == 0 && (outputIndex < 2 || output[outputIndex - 2] == '/' != 0)) continue;
     strcat(output, codes[formattedInput[i]-'A'+33]);
     if (i+1 < inputLen) strcat(output, " ");
   }

@@ -21,11 +21,11 @@ int main() {
   hangman(secretWord);
 #endif // HANGMAN
 #ifdef MORSE
-  unsigned long inputMorseLen, inputTextLen;
+  unsigned long inputTextLen, inputMorseLen;
+  char inputText[] = "yeah, this is NTR!"; // -.-- . .- .... --..-- / - .... .. ... / .. ... / -. - .-. -.-.--
   char inputMorse[] = "-.-- . .- .... --..-- / - .... .. ... / .. ... / -. - .-. -.-.--"; // yeah, this is NTR!
-  char inputText[] = "yeah, this is NTR!";
-  char* outputText;
   char* outputMorse;
+  char* outputText;
   inputMorseLen = strlen(inputMorse), inputTextLen = strlen(inputText);
   outputText = (char*)calloc(inputMorseLen, sizeof(*inputMorse));
   outputMorse = (char*)calloc(inputTextLen*CODE_SIZE, sizeof(char));
