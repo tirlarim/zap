@@ -1,6 +1,11 @@
 #ifndef MORSE_H
 #define MORSE_H
 
+#define MORSE_CODE_LEN 15000
+#define MORSE_TEXT_LEN 15000
+#define CODE_SIZE 7 // 5 for letters 6 for letters & numbers 7 for symbols
+#define SYMBOLS_COUNT ('Z'-' '+1)
+
 /**
  * Function detects, if provided morse code is valid or no,
  * If code is valid, function returns 1. If not, returns 0.

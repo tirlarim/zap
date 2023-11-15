@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "./utils.h"
 #include "./hangman.h"
 
 long getFileSize(FILE* fp) {
@@ -68,14 +69,6 @@ void getFormattedWord(const char* word, char* formattedWord) {
   }
 }
 
-void normalizeWord(char* letter) {
-  unsigned long wordLen = strlen(letter);
-  for (int i = 0; i < wordLen; ++i) {
-    if (letter[i] >= 65 && letter[i] <= 90)
-     letter+=32;
-  }
-}
-
 bool isLetterInWord(const char* secretWord, char letter) {
   unsigned long secretWordLen = strlen(secretWord)+1;
   for (int i = 0; i < secretWordLen; ++i) {
@@ -98,7 +91,7 @@ bool isSymbolNew(const char* lettersGuessed, char letter) {
 
 void get_available_letters(const char* lettersGuessed, char* lettersAvailable) {
   unsigned long lettersGuessedLen = strlen(lettersGuessed), lettersAvailableIndex = 0;
-  memset(lettersAvailable, '\0', (LETTERS_COUNT+1)*sizeof(char));
+  memset(lettersAvailable, '\0', (LETTERS_COUNT + 1) * sizeof(char));
   for (int i = 'a'; i <= 'z'; ++i) {
     bool findSymbol = false;
     for (int j = 0; j < lettersGuessedLen; ++j) {
@@ -168,7 +161,7 @@ void hangman(const char* secretWord) {
   char* currentWord = (char*)malloc(currentWordSize);
   char* wordFormatted = (char*)malloc(currentWordSize*2);
   char* inputBuffer = (char*)malloc(WORD_LEN_MAX*sizeof(*inputBuffer));
-  char availableLetters[LETTERS_COUNT+1] = {0}, lettersGuessed[LETTERS_COUNT+1] = {0};
+  char availableLetters[LETTERS_COUNT + 1] = {0}, lettersGuessed[LETTERS_COUNT + 1] = {0};
   memset(currentWord, '_', currentWordSize-1);
   memset(wordFormatted, ' ', 2*currentWordSize-1);
   printf("Welcome to the game, Hangman!\n"
