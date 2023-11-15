@@ -33,7 +33,7 @@ char** getMorseCodes() {
   return codes;
 }
 
-void destroyCodesTable(char** codes) {
+void destroyMorseTable(char** codes) {
   for (int i = 0; i < SYMBOLS_COUNT; ++i)
     free(codes[i]);
   free(codes);
@@ -48,13 +48,15 @@ void text_to_morse(const char* input, char* output) {
   memset(output, '\0', MORSE_CODE_LEN*sizeof(char));
   uppercase(formattedInput);
   for (int i = 0; i < inputLen; ++i) {
+#ifdef DEBUG_FLAG
     printf("symbol: %c (%d)\n", formattedInput[i], formattedInput[i]);
     printf("code index: %d\n", formattedInput[i]-'A'+33);
     printf("code: %s\n", codes[formattedInput[i]-'A'+33]);
+#endif
     strcat(output, codes[formattedInput[i]-'A'+33]);
     if (i+1 < inputLen) strcat(output, " ");
   }
-  destroyCodesTable(codes);
+  destroyMorseTable(codes);
   free(formattedInput);
 }
 
@@ -82,7 +84,7 @@ void morse_to_text(const char* input, char* output) {
       memset(codeBuffer, '\0', CODE_SIZE*sizeof(char));
     }
   }
-  destroyCodesTable(codes);
+  destroyMorseTable(codes);
 }
 
 int is_morse_code_valid(const char* morseCode) {
@@ -105,11 +107,14 @@ int is_morse_code_valid(const char* morseCode) {
           break;
         }
       }
-      if (!findCode) return false;
+      if (!findCode) {
+        destroyMorseTable(codes);
+        return 0;
+      }
       codeBufferIndex = 0;
       memset(codeBuffer, '\0', CODE_SIZE*sizeof(char));
     }
   }
-  destroyCodesTable(codes);
+  destroyMorseTable(codes);
   return 1;
 }

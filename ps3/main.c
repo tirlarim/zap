@@ -10,8 +10,7 @@
 int main() {
 #ifdef HANGMAN
   srand(time(NULL));
-  char secretWord[WORD_LEN_MAX] = {0},
-  guessedWordAnswer[WORD_LEN_MAX] = {0}, availableLettersAnswer[LETTERS_COUNT+1] = {0};
+  char secretWord[WORD_LEN_MAX] = {0};
   unsigned char wordLen = get_word(secretWord);
   if (!wordLen) {
     perror("Unable to open file.\n");
@@ -19,40 +18,26 @@ int main() {
   }
 #ifdef DEBUG_FLAG
   printf("%s\n", secretWord);
-  printf("%d\n", is_word_guessed("hello", "eaeihoul"));
-  get_guessed_word("container", "arpstxgoieyu", guessedWordAnswer);
-  get_available_letters("arpstxgoieyu", availableLettersAnswer);
-  printf("%s\n", guessedWordAnswer);
-  printf("%s\n", availableLettersAnswer);
 #endif // DEBUG_FLAG
   hangman(secretWord);
 #endif // HANGMAN
 #ifdef MORSE
-  unsigned long inputLen;
-  char input[] = "-.-- . .- .... --..-- / - .... .. ... / .. ... / -. - .-. -.-.--"; // yeah, this is NTR!
-  char* output;
-  inputLen = strlen(input);
-//  scanf("%lu", &inputLen);
-//  input = (char*)calloc(inputLen, sizeof(*input));
-  output = (char*)calloc(inputLen, sizeof(*input));
-//  scanf("%s", input);
-//  printf("text to Morse >> %s (%lu)\n", input, inputLen);
-//  text_to_morse(input, output);
-//  printf("%s\n", output);
-  printf("Morse to Text >> %s (%lu)\n", input, inputLen);
-  morse_to_text(input, output);
-  printf("%s\n", output);
-  if (is_morse_code_valid(".... . .-.. .-.. ---")) { //prints: Code is valid!
-    printf("Code is valid! \n");
-  } else {
-    printf("Code is invalid! \n");
-  }
-
-  if (is_morse_code_valid(".... . .-.--. .-.. ---")) { //prints: Code is invalid!
-    printf("Code is valid! \n");
-  } else {
-    printf("Code is invalid! \n");
-  }
+  unsigned long inputMorseLen, inputTextLen;
+  char inputMorse[] = "-.-- . .- .... --..-- / - .... .. ... / .. ... / -. - .-. -.-.--"; // yeah, this is NTR!
+  char inputText[] = "yeah, this is NTR!";
+  char* outputText;
+  char* outputMorse;
+  inputMorseLen = strlen(inputMorse), inputTextLen = strlen(inputText);
+  outputText = (char*)calloc(inputMorseLen, sizeof(*inputMorse));
+  outputMorse = (char*)calloc(inputTextLen*CODE_SIZE, sizeof(char));
+  printf("Text to Morse >> %s (%lu)\n", inputText, inputTextLen);
+  text_to_morse(inputText, outputMorse);
+  printf("%s\n", outputMorse);
+  printf("Morse to Text >> %s (%lu)\n", inputMorse, inputMorseLen);
+  morse_to_text(inputMorse, outputText);
+  printf("%s\n", outputText);
+  free(outputMorse);
+  free(outputText);
 #endif // MORSE
   return EXIT_SUCCESS;
 }
