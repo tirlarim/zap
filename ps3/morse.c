@@ -4,6 +4,11 @@
 #include <stdbool.h>
 #include "morse.h"
 
+#define MORSE_CODE_LEN 15000
+#define MORSE_TEXT_LEN 15000
+#define CODE_SIZE 7 // 5 for letters 6 for letters & numbers 7 for symbols
+#define SYMBOLS_COUNT ('Z'-' '+1)
+
 char** getMorseCodes() {
   unsigned char codeIndex = 0;
   char** codes = (char**)calloc(SYMBOLS_COUNT, sizeof(char*));

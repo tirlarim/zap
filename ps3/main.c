@@ -5,12 +5,26 @@
 #include "./hangman.h"
 #include "./morse.h"
 
+//hangman
+#define WORDLIST_FILENAME "words.txt"
+#define WORD_LEN_MAX 30
+#define TRY_COUNT_MAX 8
+#define LETTERS_COUNT ('z'-'a'+1)
+//morse
+#define MORSE_CODE_LEN 15000
+#define MORSE_TEXT_LEN 15000
+#define CODE_SIZE 7 // 5 for letters 6 for letters & numbers 7 for symbols
+#define SYMBOLS_COUNT ('Z'-' '+1)
 
 int main() {
 #ifdef HANGMAN
   srand(time(NULL));
   char secretWord[WORD_LEN_MAX] = {0};
-  unsigned char wordLen = get_word(secretWord);
+  if (get_word(secretWord)) {
+    perror("Unable read words file");
+    return EXIT_FAILURE;
+  }
+  unsigned char wordLen = strlen(secretWord);
   if (!wordLen) {
     perror("Unable to open file.\n");
     return EXIT_FAILURE;
@@ -22,7 +36,7 @@ int main() {
 #endif // HANGMAN
 #ifdef MORSE
   unsigned long inputTextLen, inputMorseLen;
-  char inputText[] = "yeah, this is NTR!"; // -.-- . .- .... --..-- / - .... .. ... / .. ... / -. - .-. -.-.--
+  char inputText[] = "yeah, this ^ is NTR!"; // -.-- . .- .... --..-- / - .... .. ... / .. ... / -. - .-. -.-.--
   char inputMorse[] = "-.-- . .- .... --..-- / - .... .. ... / .. ... / -. - .-. -.-.--"; // yeah, this is NTR!
   char* outputMorse;
   char* outputText;

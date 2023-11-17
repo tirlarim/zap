@@ -1,11 +1,6 @@
 #ifndef HANGMAN_H
 #define HANGMAN_H
 
-#define WORDLIST_FILENAME "words.txt"
-#define WORD_LEN_MAX 30
-#define TRY_COUNT_MAX 8
-#define LETTERS_COUNT ('z'-'a'+1)
-
 /**
  * Function detects, whether player guessed the secret word
  * Based on the letters player used for guessing, this function detects,
@@ -15,7 +10,7 @@
  * @param lettersGuessed the lowercase letters player already used in his guessing
  * @return 1, if word is guess; 0 otherwise.
  */
-unsigned char is_word_guessed(const char* secretWord, const char* lettersGuessed);
+int is_word_guessed(const char* secretWord, const char* lettersGuessed);
 
 
 /**
@@ -49,11 +44,15 @@ void hangman(const char* secretWord);
 
 
 /**
- * Function opens the file with words and read random one into the buffer.
- * If error 0 is returned, else word length is returned.
- * @param buffer buffer, where random word will be read
- * @return word length
+ * Returns the random word
+ * Function opens the file with all the words and reads randomly one of them
+ * into the buffer pointed by secret. Word consists of lowercase letters.
+ * If there is some error with reading the file, 1 is returned.
+ * Don't forget to initialize the random numbers in your main() function will srand() call!
+ * Otherwise (everything is ok), 0 is returned.
+ * @param secret buffer, where random word will be read
+ * @return status code
  */
-unsigned long get_word(char* buffer);
+int get_word(char* buffer);
 
 #endif //HANGMAN_H

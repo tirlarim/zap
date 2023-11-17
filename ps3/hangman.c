@@ -4,6 +4,11 @@
 #include <stdbool.h>
 #include "./hangman.h"
 
+#define WORDLIST_FILENAME "words.txt"
+#define WORD_LEN_MAX 30
+#define TRY_COUNT_MAX 8
+#define LETTERS_COUNT ('z'-'a'+1)
+
 void lowercase(char* word) {
   unsigned long wordLen = strlen(word);
   for (int i = 0; i < wordLen; ++i) {
@@ -20,25 +25,23 @@ long getFileSize(FILE* fp) {
   return size;
 }
 
-unsigned long get_word(char* buffer) {
+int get_word(char* buffer) {
   long fileSize;
-  unsigned long wordLen = 0;
   FILE* fp = fopen(WORDLIST_FILENAME, "r");
   if (fp == NULL) {
     fprintf(stderr, "No such file or directory: %s\n", WORDLIST_FILENAME);
-    return wordLen;
+    return 1;
   }
   fileSize = getFileSize(fp);
   while (!*buffer) {
     fseek(fp, (rand() % fileSize) + 1, SEEK_SET);
     fscanf(fp, "%*s %s", buffer);
-    wordLen = strlen(buffer);
   }
   fclose(fp);
-  return wordLen;
+  return 0;
 }
 
-unsigned char is_word_guessed(const char* secretWord, const char* lettersGuessed) {
+int is_word_guessed(const char* secretWord, const char* lettersGuessed) {
   unsigned long secretWordLen = strlen(secretWord), lettersGuessedLen = strlen(lettersGuessed);
   for (int i = 0; i < secretWordLen; ++i) {
     bool findSymbol = false;
@@ -57,15 +60,12 @@ void get_guessed_word(const char* secretWord, const char* lettersGuessed, char* 
   unsigned long secretWordLen = strlen(secretWord), lettersGuessedLen = strlen(lettersGuessed);
   memset(wordGuessed, '_', secretWordLen*sizeof(char));
   for (int i = 0; i < secretWordLen; ++i) {
-    bool findSymbol = false;
     for (int j = 0; j < lettersGuessedLen; ++j) {
       if (secretWord[i] == lettersGuessed[j]) {
-        findSymbol = true;
+        wordGuessed[i] = secretWord[i];
         break;
       }
     }
-    if (findSymbol)
-      wordGuessed[i] = secretWord[i];
   }
 }
 
@@ -77,7 +77,7 @@ void getFormattedWord(const char* word, char* formattedWord) {
 }
 
 bool isLetterInWord(const char* secretWord, char letter) {
-  unsigned long secretWordLen = strlen(secretWord)+1;
+  unsigned long secretWordLen = strlen(secretWord);
   for (int i = 0; i < secretWordLen; ++i) {
     if (secretWord[i] == letter) return true;
   }
