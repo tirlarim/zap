@@ -5,16 +5,19 @@
 #include "./hangman.h"
 #include "./morse.h"
 
-//hangman
+#ifdef HANGMAN
 #define WORDLIST_FILENAME "words.txt"
 #define WORD_LEN_MAX 30
 #define TRY_COUNT_MAX 8
 #define LETTERS_COUNT ('z'-'a'+1)
-//morse
+#endif //hangman
+
+#ifdef MORSE
 #define MORSE_CODE_LEN 15000
 #define MORSE_TEXT_LEN 15000
 #define CODE_SIZE 7 // 5 for letters 6 for letters & numbers 7 for symbols
 #define SYMBOLS_COUNT ('Z'-' '+1)
+#endif //morse
 
 int main() {
 #ifdef HANGMAN
