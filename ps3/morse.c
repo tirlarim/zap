@@ -67,7 +67,7 @@ void text_to_morse(const char* input, char* output) {
     int codeIndex = formattedInput[i]-'A'+33;
     unsigned long outputIndex = strlen(output);
     if (codeIndex < 0 || codeIndex >= SYMBOLS_COUNT) continue;
-    if (codeIndex == 0 && (outputIndex < 2 || output[outputIndex - 2] == '/' != 0)) continue;
+    if (codeIndex == 0 && (outputIndex < 2 || output[outputIndex - 2] == '/') != 0) continue;
     strcat(output, codes[formattedInput[i]-'A'+33]);
     if (i+1 < inputLen) strcat(output, " ");
   }
