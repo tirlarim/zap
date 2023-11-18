@@ -130,6 +130,7 @@ void tickInput(char* input, const char* secretWord, char* currentWord, char* let
       --(*tryCount);
       ++(*lettersGuessedIndex);
       if (isLetterRight) {
+        ++(*tryCount);
         printf("Good guess: %s\n-------------\n", wordFormatted);
       } else {
         printf("Oops! That letter is not in my word: %s\n-------------\n", wordFormatted);
