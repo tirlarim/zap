@@ -5,5 +5,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 #add_compile_definitions(DEBUG_FLAG)
 #add_compile_definitions(HANGMAN)
-add_compile_definitions(MORSE)
+#add_compile_definitions(MORSE)
 add_executable(zap-2023-8748 ./ps3/main.c ./ps3/hangman.c ./ps3/morse.c)
+
+#// cppcheck --enable=performance,unusedFunction --error-exitcode=1 *.c
+# gcc -c ./main.c ./hangman.c ./morse.c -std=c11 -Wall -Werror -o main
