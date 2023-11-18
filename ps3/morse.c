@@ -81,6 +81,7 @@ void morse_to_text(const char* input, char* output) {
   char codeBuffer[CODE_SIZE] = {0};
   unsigned int codeBufferIndex = 0;
   char** codes = getMorseCodes();
+  memset(output, '\0', inputLen*sizeof(char));
   for (int i = 0; i < inputLen; ++i) {
     if (input[i] != ' ')
       codeBuffer[codeBufferIndex++] = input[i];

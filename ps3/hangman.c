@@ -59,6 +59,7 @@ int is_word_guessed(const char* secretWord, const char* lettersGuessed) {
 void get_guessed_word(const char* secretWord, const char* lettersGuessed, char* wordGuessed) {
   unsigned long secretWordLen = strlen(secretWord), lettersGuessedLen = strlen(lettersGuessed);
   memset(wordGuessed, '_', secretWordLen*sizeof(char));
+  wordGuessed[secretWordLen] = '\0';
   for (int i = 0; i < secretWordLen; ++i) {
     for (int j = 0; j < lettersGuessedLen; ++j) {
       if (secretWord[i] == lettersGuessed[j]) {
@@ -74,6 +75,7 @@ void getFormattedWord(const char* word, char* formattedWord) {
   for (int i = 0; i < wordLen; ++i) {
     formattedWord[i*2] = word[i];
   }
+  formattedWord[wordLen*2-1] = '\0';
 }
 
 bool isLetterInWord(const char* secretWord, char letter) {
