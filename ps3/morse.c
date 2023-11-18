@@ -78,7 +78,8 @@ void text_to_morse(const char* input, char* output) {
 void morse_to_text(const char* input, char* output) {
   unsigned long inputLen = strlen(input);
   unsigned long outputIndex = 0;
-  char codeBuffer[CODE_SIZE] = {0}, codeBufferIndex = 0;
+  char codeBuffer[CODE_SIZE] = {0};
+  unsigned int codeBufferIndex = 0;
   char** codes = getMorseCodes();
   for (int i = 0; i < inputLen; ++i) {
     if (input[i] != ' ')
@@ -104,7 +105,8 @@ void morse_to_text(const char* input, char* output) {
 
 int is_morse_code_valid(const char* morseCode) {
   unsigned long morseCodeLen = strlen(morseCode);
-  char codeBuffer[CODE_SIZE] = {0}, codeBufferIndex = 0;
+  char codeBuffer[CODE_SIZE] = {0};
+  unsigned char codeBufferIndex = 0;
   char** codes = getMorseCodes();
   for (int i = 0; i < morseCodeLen; ++i) {
     if (morseCode[i] != ' ')

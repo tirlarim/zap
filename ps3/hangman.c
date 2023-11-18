@@ -30,7 +30,7 @@ int get_word(char* buffer) {
   FILE* fp = fopen(WORDLIST_FILENAME, "r");
   if (fp == NULL) {
     fprintf(stderr, "No such file or directory: %s\n", WORDLIST_FILENAME);
-    return 1;
+    return EXIT_FAILURE;
   }
   fileSize = getFileSize(fp);
   while (!*buffer) {
@@ -38,7 +38,7 @@ int get_word(char* buffer) {
     fscanf(fp, "%*s %s", buffer);
   }
   fclose(fp);
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int is_word_guessed(const char* secretWord, const char* lettersGuessed) {

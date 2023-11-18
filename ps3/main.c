@@ -5,19 +5,16 @@
 #include "./hangman.h"
 #include "./morse.h"
 
-#ifdef HANGMAN
+//hangman
 #define WORDLIST_FILENAME "words.txt"
 #define WORD_LEN_MAX 30
 #define TRY_COUNT_MAX 8
 #define LETTERS_COUNT ('z'-'a'+1)
-#endif //hangman
-
-#ifdef MORSE
+//morse
 #define MORSE_CODE_LEN 15000
 #define MORSE_TEXT_LEN 15000
 #define CODE_SIZE 7 // 5 for letters 6 for letters & numbers 7 for symbols
 #define SYMBOLS_COUNT ('Z'-' '+1)
-#endif //morse
 
 int main() {
 #ifdef HANGMAN
@@ -45,15 +42,39 @@ int main() {
   char* outputText;
   inputMorseLen = strlen(inputMorse), inputTextLen = strlen(inputText);
   outputText = (char*)calloc(inputMorseLen, sizeof(*inputMorse));
-  outputMorse = (char*)calloc(inputTextLen*CODE_SIZE, sizeof(char));
+  outputMorse = (char*)calloc(inputTextLen * CODE_SIZE, sizeof(char));
   printf("Text to Morse >> %s (%lu)\n", inputText, inputTextLen);
   text_to_morse(inputText, outputMorse);
   printf("%s\n", outputMorse);
   printf("Morse to Text >> %s (%lu)\n", inputMorse, inputMorseLen);
   morse_to_text(inputMorse, outputText);
   printf("%s\n", outputText);
+  if (is_morse_code_valid(".... . .-.--. .-.. ---")) {
+    printf("Code is valid! \n");
+  } else {
+    printf("Code is invalid! \n");
+  }
   free(outputMorse);
   free(outputText);
 #endif // MORSE
+#ifndef HANGMAN
+#ifndef MORSE
+  srand(time(NULL));
+  char secretWord[WORD_LEN_MAX] = {0};
+  if (get_word(secretWord)) {
+    perror("Unable read words file");
+    return EXIT_FAILURE;
+  }
+  unsigned char wordLen = strlen(secretWord);
+  if (!wordLen) {
+    perror("Word len is zero\n");
+    return EXIT_FAILURE;
+  }
+#ifdef DEBUG_FLAG
+  printf("%s\n", secretWord);
+#endif // DEBUG_FLAG
+  hangman(secretWord);
+#endif
+#endif
   return EXIT_SUCCESS;
 }
