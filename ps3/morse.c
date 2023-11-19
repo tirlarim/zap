@@ -77,26 +77,34 @@ void text_to_morse(const char* input, char* output) {
 }
 
 void morse_to_text(const char* input, char* output) {
+
   unsigned long inputLen = strlen(input);
   unsigned long outputIndex = 0;
   char codeBuffer[CODE_SIZE] = {0};
   unsigned int codeBufferIndex = 0;
   char** codes = getMorseCodes();
+  for (int i = 0; i < SYMBOLS_COUNT; ++i) {
+    printf("%d(%c) -> %s\n", i, (char)i+FIRST_SYMBOL, codes[i]);
+  }
   memset(output, '\0', inputLen*sizeof(char));
   for (int i = 0; i < inputLen; ++i) {
-    if (input[i] != FIRST_SYMBOL)
+    if (input[i] != ' ')
       codeBuffer[codeBufferIndex++] = input[i];
-    if (input[i] == FIRST_SYMBOL || i+1 == inputLen) {
-      for (int j = 0; j < SYMBOLS_COUNT; ++j) {
-        if (!strcmp(codes[j], codeBuffer)) {
+    if (input[i] == ' ' || i+1 == inputLen) {
+      if (!is_morse_code_valid(codeBuffer)) {
+        output[outputIndex++] = ' ';
+      } else {
+        for (int j = 0; j < SYMBOLS_COUNT; ++j) {
+          if (!strcmp(codes[j], codeBuffer)) {
 #ifdef DEBUG_FLAG
-          printf("code index: %d\n", j);
-          printf("code: %s\n", codes[j]);
-          printf("symbol: %c\n", j+' ');
+            printf("code index: %d\n", j);
+            printf("code: %s\n", codes[j]);
+            printf("symbol: %c\n", j+' ');
 #endif
-          if ((16 <= j && j <= 25) || j >= 33) output[outputIndex++] = (char)(j + ' ');
-          else output[outputIndex++] = ' ';
-          break;
+            if ((16 <= j && j <= 25) || (33 <= j)) output[outputIndex++] = (char)(j + ' ');
+            else output[outputIndex++] = ' ';
+            break;
+          }
         }
       }
       codeBufferIndex = 0;

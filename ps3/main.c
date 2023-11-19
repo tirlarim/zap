@@ -10,6 +10,10 @@ int main() {
   time_t t;
   srand(time(&t));
   get_word(buff);
-  hangman(buff);
+//  hangman(buff);
+  char output[150];
+  morse_to_text("--.-. ..- .-. ..-. ..- - ", output);
+  puts(output);
+  //prints: HELLO
   return 0;
 }
