@@ -46,9 +46,9 @@ bool checkFuckingRetardedCodesFromTUKEArena(const char* input, char* output, uns
       {"--.-. ..- .-. ..-. ..- - "},
   };
   char valueTable[][MORSE_TEXT_LEN/10] = {
-      {"SHUWF "},
-      {"NAMR\'"},
-      {" URFUT"},
+      {"SHUWF "}, // should be SHUWF. + valid
+      {"NAMR\'"}, // should be NAMR' + valid (arena mark as invalid)
+      {" URFUT"}, // should be ĜURFUT + unknown
   };
   for (int i = 0; i < arenaErrorCodesCount; ++i) {
     if (!strcmp(input, codeTable[i])) {
