@@ -122,6 +122,7 @@ void tickInput(char* input, const char* secretWord, char* currentWord, char* let
   if (input[1] == '\0') { // input is symbol
     bool isLetterValid = isSymbolValid(input[0]);
     bool isLetterNew = isSymbolNew(lettersGuessed, input[0]);
+    getFormattedWord(currentWord, wordFormatted);
     if (isLetterValid && isLetterNew) {
       lettersGuessed[*lettersGuessedIndex] = input[0];
       get_guessed_word(secretWord, lettersGuessed, currentWord);

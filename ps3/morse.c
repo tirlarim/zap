@@ -112,8 +112,8 @@ int is_morse_code_valid(const char* morseCode) {
   unsigned char codeBufferIndex = 0;
   char** codes = getMorseCodes();
   for (int i = 0; i < morseCodeLen; ++i) {
-    if (morseCode[i] != ' ')
-      codeBuffer[codeBufferIndex++] = morseCode[i];
+    if (codeBufferIndex > CODE_SIZE-1) return 0;
+    if (morseCode[i] != ' ' && (morseCode[i] == '.' || morseCode[i] == '-')) codeBuffer[codeBufferIndex++] = morseCode[i];
     if (morseCode[i] == ' ' || i+1 == morseCodeLen) {
       bool findCode = false;
       for (int j = 16; j < SYMBOLS_COUNT; ++j) {
