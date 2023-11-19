@@ -38,27 +38,6 @@ char** getMorseCodes() {
   return codes;
 }
 
-bool checkFuckingRetardedCodesFromTUKEArena(const char* input, char* output, unsigned char mode) {
-  char arenaErrorCodesCount = 3;
-  char codeTable[][MORSE_CODE_LEN/10] = {
-      {"... .... ..- .-- ..-. .-.-.-"},
-      {"-. .- -- .-. .----."},
-      {"--.-. ..- .-. ..-. ..- - "},
-  };
-  char valueTable[][MORSE_TEXT_LEN/10] = {
-      {"SHUWF "}, // should be SHUWF. + valid
-      {"NAMR\'"}, // should be NAMR' + valid (arena mark as invalid)
-      {" URFUT"}, // should be ĜURFUT + unknown
-  };
-  for (int i = 0; i < arenaErrorCodesCount; ++i) {
-    if (!strcmp(input, codeTable[i])) {
-      if (mode) strcpy(output, valueTable[i]);
-      return true;
-    }
-  }
-  return false;
-}
-
 void destroyMorseTable(char** codes) {
   for (int i = 0; i < SYMBOLS_COUNT; ++i)
     free(codes[i]);
@@ -104,7 +83,6 @@ void morse_to_text(const char* input, char* output) {
   unsigned int codeBufferIndex = 0;
   char** codes = getMorseCodes();
   memset(output, '\0', inputLen*sizeof(char));
-  if (checkFuckingRetardedCodesFromTUKEArena(input, output, 1)) return;
   for (int i = 0; i < inputLen; ++i) {
     if (input[i] != FIRST_SYMBOL)
       codeBuffer[codeBufferIndex++] = input[i];
@@ -116,7 +94,8 @@ void morse_to_text(const char* input, char* output) {
           printf("code: %s\n", codes[j]);
           printf("symbol: %c\n", j+' ');
 #endif
-          output[outputIndex++] = (char)(j+FIRST_SYMBOL);
+          if (16 <= j && j <= 25 || j >= 33) output[outputIndex++] = (char)(j + ' ');
+          else output[outputIndex++] = ' ';
           break;
         }
       }
@@ -130,17 +109,15 @@ void morse_to_text(const char* input, char* output) {
 int is_morse_code_valid(const char* morseCode) {
   unsigned long morseCodeLen = strlen(morseCode);
   char codeBuffer[CODE_SIZE] = {0};
-  char tmp[150] = {0};
   unsigned char codeBufferIndex = 0;
   char** codes = getMorseCodes();
-  if (checkFuckingRetardedCodesFromTUKEArena(morseCode, tmp, 0)) return 0;
   for (int i = 0; i < morseCodeLen; ++i) {
-    if (morseCode[i] != FIRST_SYMBOL)
+    if (morseCode[i] != ' ')
       codeBuffer[codeBufferIndex++] = morseCode[i];
-    if (morseCode[i] == FIRST_SYMBOL || i+1 == morseCodeLen) {
+    if (morseCode[i] == ' ' || i+1 == morseCodeLen) {
       bool findCode = false;
-      for (int j = 0; j < SYMBOLS_COUNT; ++j) {
-        if (!strcmp(codes[j], codeBuffer)) {
+      for (int j = 16; j < SYMBOLS_COUNT; ++j) {
+        if (!strcmp(codes[j], codeBuffer) && (j <= 25 || j >= 33)) {
 #ifdef DEBUG_FLAG
           printf("code index: %d\n", j);
           printf("code: %s\n", codes[j]);
