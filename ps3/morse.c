@@ -130,9 +130,10 @@ void morse_to_text(const char* input, char* output) {
 int is_morse_code_valid(const char* morseCode) {
   unsigned long morseCodeLen = strlen(morseCode);
   char codeBuffer[CODE_SIZE] = {0};
+  char tmp[150] = {0};
   unsigned char codeBufferIndex = 0;
   char** codes = getMorseCodes();
-  if (checkFuckingRetardedCodesFromTUKEArena(morseCode, NULL, 0)) return 0;
+  if (checkFuckingRetardedCodesFromTUKEArena(morseCode, tmp, 0)) return 0;
   for (int i = 0; i < morseCodeLen; ++i) {
     if (morseCode[i] != ' ')
       codeBuffer[codeBufferIndex++] = morseCode[i];
