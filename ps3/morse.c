@@ -135,9 +135,9 @@ int is_morse_code_valid(const char* morseCode) {
   char** codes = getMorseCodes();
   if (checkFuckingRetardedCodesFromTUKEArena(morseCode, tmp, 0)) return 0;
   for (int i = 0; i < morseCodeLen; ++i) {
-    if (morseCode[i] != ' ')
+    if (morseCode[i] != FIRST_SYMBOL)
       codeBuffer[codeBufferIndex++] = morseCode[i];
-    if (morseCode[i] == ' ' || i+1 == morseCodeLen) {
+    if (morseCode[i] == FIRST_SYMBOL || i+1 == morseCodeLen) {
       bool findCode = false;
       for (int j = 0; j < SYMBOLS_COUNT; ++j) {
         if (!strcmp(codes[j], codeBuffer)) {
