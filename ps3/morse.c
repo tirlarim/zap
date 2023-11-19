@@ -94,7 +94,7 @@ void morse_to_text(const char* input, char* output) {
           printf("code: %s\n", codes[j]);
           printf("symbol: %c\n", j+' ');
 #endif
-          if (16 <= j && j <= 25 || j >= 33) output[outputIndex++] = (char)(j + ' ');
+          if ((16 <= j && j <= 25) || j >= 33) output[outputIndex++] = (char)(j + ' ');
           else output[outputIndex++] = ' ';
           break;
         }
