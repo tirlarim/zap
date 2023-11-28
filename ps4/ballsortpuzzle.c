@@ -3,7 +3,10 @@
 #include <string.h>
 #include <time.h>
 #include "ballsortpuzzle.h"
+
+#ifdef HAPPY_GAME_END
 #include "printColors.h"
+#endif
 
 #define VOID_COLUMNS_COUNT 2
 #define MIN_ARENA_SIZE_X 4
