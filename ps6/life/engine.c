@@ -72,7 +72,7 @@ void fscanArena(FILE* fp, unsigned short **arena, unsigned short sizeY, unsigned
       fscanf(fp, "%hd", &arena[i][j]);
 }
 
-// TODO rewrite this slow shit-code
+// TODO rewrite this slow low-quality code
 unsigned char getNeighborsCount(unsigned short **arena, unsigned short sizeY, unsigned short sizeX,
                                 unsigned short positionY, unsigned short positionX) {
   unsigned char neighborsCount = 0;
