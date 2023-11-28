@@ -53,11 +53,10 @@ int drop_piece(int rows, int cols, char board[rows][cols], int col, char player_
 //check [low-left]-[top-right]
 //check [top-left]-[low-right]
 int check_win(int rows, int cols, const char board[][cols], int row, int col, char player_piece) {
-  --row; --col;
   int indexes[2] = {0}, offsets[2] = {0};
   unsigned int combos[4] = {0};
 
-  if (row+1 == -1) for (int i = 0; i < rows && (board[i][col] == player_piece || board[i][col] == BLANK); ++i) row = i;
+  if (row == -1) for (int i = 0; i < rows && (board[i][col] == player_piece || board[i][col] == BLANK); ++i) row = i;
 
   for (int i = 0; row-i >= 0 && board[row-i][col] == player_piece; ++i) {indexes[0] = row-i;}
   for (int i = 0; col-i >= 0 && board[row][col-i] == player_piece; ++i) {indexes[1] = col-i;}

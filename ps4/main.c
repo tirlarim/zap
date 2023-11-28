@@ -33,7 +33,7 @@ int main() {
 //  drop_piece(rows, cols, board, 2, 'x');  drop_piece(rows, cols, board, 2, 'o');
 //  drop_piece(rows, cols, board, 1, 'o');
 //  print_board(rows, cols, board);
-//  if (check_win(rows, cols, board, -1, 1, 'o')) {
+//  if (check_win(rows, cols, board, -1, 0, 'o')) {
 //    printf("Win");
 //  }
 
