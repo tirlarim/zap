@@ -1,7 +1,7 @@
 #ifndef CONNECT_FOUR_H
 #define CONNECT_FOUR_H
 
-// disable for arena compilation
+//TODO: disable for arena compilation
 //#define CUSTOM_HEADER_ALLOWED
 
 /**

@@ -5,7 +5,7 @@
 
 #define BLANK ' '
 
-// disable for arena compilation
+////TODO: disable for arena compilation
 //#define CUSTOM_ARENA_ALLOWED
 //#ifdef __APPLE__
 //#define HAPPY_GAME_END
@@ -14,10 +14,17 @@
 //#define HAPPY_GAME_END
 //#endif
 
+//#ifdef HAPPY_GAME_END
+//#include "printColors.h"
+//#endif
+
+
+#ifdef CUSTOM_ARENA_ALLOWED
 typedef struct Arena {
   unsigned int sizeX, sizeY;
   unsigned char** data;
 }ARENA;
+#endif
 
 /**
  * Function draw game field

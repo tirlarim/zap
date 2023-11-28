@@ -4,7 +4,8 @@
 #include <time.h>
 #include "ballsortpuzzle.h"
 
-// disable for arena compilation
+//TODO: disable for arena compilation
+//#include "graphic.h"
 //#ifdef HAPPY_GAME_END
 //#include "printColors.h"
 //#endif
@@ -35,12 +36,13 @@ bool include(const unsigned int* array, unsigned int arrLen, unsigned char item)
 
 void fillArrayUnique(unsigned int* array, unsigned int arrLen, unsigned int min, unsigned int max) {
   for (int i = 0; i < arrLen;) {
-    unsigned int currentUnique = (rand() % max-min)+min;
+    unsigned int currentUnique = (rand() % max - min) + min;
     if (!include(array, i, currentUnique)) array[i++] = currentUnique;
   }
 }
 
 #ifdef CUSTOM_ARENA_ALLOWED
+
 bool check2DArray(ARENA* arena) {
   for (int i = 0; i < arena->sizeX; ++i) {
     unsigned char currentElement = arena->data[0][i];
@@ -58,7 +60,7 @@ bool check2DArray(ARENA* arena) {
 }
 
 void initArena(ARENA* arena) {
-  arena->data = malloc(arena->sizeY*sizeof(unsigned char*));
+  arena->data = malloc(arena->sizeY * sizeof(unsigned char*));
   for (int i = 0; i < arena->sizeY; ++i) {
     arena->data[i] = calloc(arena->sizeX, sizeof(unsigned char));
   }
@@ -75,17 +77,18 @@ void generator(ARENA* arena) {
   srand(time(NULL));
   bool isGenerationIncorrect = true;
   while (isGenerationIncorrect) {
-    unsigned int filledColumnsCount = arena->sizeX - VOID_COLUMNS_COUNT, itemsCount = arena->sizeY * filledColumnsCount, currentItemIndex = 0;;
+    unsigned int filledColumnsCount = arena->sizeX - VOID_COLUMNS_COUNT, itemsCount =
+        arena->sizeY * filledColumnsCount, currentItemIndex = 0;;
     unsigned char* items = calloc(itemsCount, sizeof(*items));
     unsigned int* voidIndexes = calloc(VOID_COLUMNS_COUNT, sizeof(*voidIndexes));
     if (arena->sizeY > MAX_ARENA_SIZE_Y) {
       perror("Too many rows\n");
       return;
     }
-    fillArrayUnique(voidIndexes, VOID_COLUMNS_COUNT, 0, arena->sizeX-1);
+    fillArrayUnique(voidIndexes, VOID_COLUMNS_COUNT, 0, arena->sizeX - 1);
     for (unsigned int i = 0; i < filledColumnsCount; ++i) {
       for (unsigned int j = 0; j < arena->sizeY; ++j) {
-        items[currentItemIndex++] = FIRST_ITEM_SYMBOL+i;
+        items[currentItemIndex++] = FIRST_ITEM_SYMBOL + i;
       }
     }
     shuffle(items, itemsCount);
@@ -108,9 +111,10 @@ void generator(ARENA* arena) {
 }
 
 void down_possible(ARENA* arena, unsigned int x, unsigned int y) {
-  unsigned int sizeY = arena->sizeY-1, sizeX = arena->sizeX-1;
+  unsigned int sizeY = arena->sizeY - 1, sizeX = arena->sizeX - 1;
   unsigned char currentSymbol;
-  --x; --y;
+  --x;
+  --y;
   if (x > sizeX != 0 || y > sizeX || x == y || arena->data[0][y] != BLANK || arena->data[sizeY][x] == BLANK) {
     printf("Unable to move from column %d to %d -> try different column\n", x, y);
     return;
@@ -134,7 +138,7 @@ bool check(ARENA* arena) {
   for (int i = 0; i < arena->sizeX; ++i) {
     bool isColumnValid = true;
     for (int j = 1; j < arena->sizeY; ++j) {
-      if (arena->data[j][i] != arena->data[j-1][i]) {
+      if (arena->data[j][i] != arena->data[j - 1][i]) {
         isColumnValid = false;
         break;
       }
@@ -145,8 +149,11 @@ bool check(ARENA* arena) {
 }
 
 void game_field(ARENA* arena) {
+#ifdef CURSES_ALLOWED
+  drawArena(arena);
+#else
   for (int i = 0; i < arena->sizeY; ++i) {
-    printf("%2d |", i+1);
+    printf("%2d |", i + 1);
     for (int j = 0; j < arena->sizeX; ++j) {
       printf(" %c |", arena->data[i][j]);
     }
@@ -159,38 +166,37 @@ void game_field(ARENA* arena) {
   printf("\n");
   printf("  ");
   for (int i = 0; i < arena->sizeX; ++i) {
-    printf("  %2d", i+1);
+    printf("  %2d", i + 1);
   }
   printf("\n");
+#endif
 }
 
 void gameTick(ARENA* arena) {
   unsigned int from, to;
+#ifdef CURSES_ALLOWED
+  getUserInput(&from, &to);
+#else
   printf("Enter what: ");
   scanf("%u", &from);
   printf("Enter where: ");
   scanf("%u", &to);
   printf("\n");
+#endif
   down_possible(arena, from, to);
 }
 
 void ball_sort_puzzle() {
   ARENA arena;
-  char colorsUnix[7][8] = { // Have no idea is this work or not on win cmd/powershell
-      ANSI_COLOR_RED,
-      ANSI_COLOR_GREEN,
-      ANSI_COLOR_YELLOW,
-      ANSI_COLOR_BLUE,
-      ANSI_COLOR_MAGENTA,
-      ANSI_COLOR_CYAN,
-      ANSI_COLOR_RESET,
-  };
   printf("Enter arena size [X Y]:\n");
   scanf("%u %u", &arena.sizeX, &arena.sizeY);
   if (arena.sizeY > MAX_ARENA_SIZE_Y || arena.sizeX < MIN_ARENA_SIZE_X || arena.sizeY < MIN_ARENA_SIZE_Y) {
     printf(ANSI_COLOR_RED":^)");
     exit(1);
   }
+#ifdef CURSES_ALLOWED
+  initCurses();
+#endif
   initArena(&arena);
   generator(&arena);
   while (!check(&arena)) {
@@ -202,14 +208,26 @@ void ball_sort_puzzle() {
   // <...How the game ends, you can decide by yourself...>
   // I want to load Trojan as reward on PC someone lucky who win this game
   // But many <Congratulations!!!!!!> is also great idea.
-#ifdef HAPPY_GAME_END
+#ifdef CURSES_ALLOWED
+  drawHappyEnd();
+  deinitCurses();
+#elifdef HAPPY_GAME_END
+  const char colorsUnix[7][8] = { // Have no idea is this work or not on win cmd/powershell
+    ANSI_COLOR_RED,
+    ANSI_COLOR_GREEN,
+    ANSI_COLOR_YELLOW,
+    ANSI_COLOR_BLUE,
+    ANSI_COLOR_MAGENTA,
+    ANSI_COLOR_CYAN,
+    ANSI_COLOR_RESET,
+};
   for (unsigned int i = 0; i < 1024; ++i) {
     if (!(i & 7)) printf("\n");
     printf("%s Congratulations! %s You %s won! ", colorsUnix[rand()%7], colorsUnix[rand()%7], colorsUnix[rand()%7]);
   }
-#else // HAPPY_GAME_END
+#else
   printf("Congratulations! You won!\n");
-#endif // HAPPY_GAME_END
+#endif
 }
 
 #else
