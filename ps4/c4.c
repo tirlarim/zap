@@ -36,15 +36,15 @@ int is_valid_move(int rows, int cols, const char board[][cols], int col) {
 }
 
 int drop_piece(int rows, int cols, char board[rows][cols], int col, char player_piece) {
-  if (!is_valid_move(rows, cols, board, col)) return 0;
+  if (!is_valid_move(rows, cols, board, col)) return -1;
   --col;
   for (int i = rows-1; i >= 0; --i) {
     if (board[i][col] == BLANK) {
       board[i][col] = player_piece;
-      break;
+      return i;
     }
   }
-  return 1;
+  return -1;
 }
 
 
