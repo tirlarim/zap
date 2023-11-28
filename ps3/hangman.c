@@ -138,7 +138,7 @@ void tickInput(char* input, const char* secretWord, char* currentWord, char* let
       }
     } else {
       if (!isLetterValid)
-        printf("Oops! '%c' is not a valid letter: %s\n-------------\n", input[0], wordFormatted);
+        printf("Oops! \'%c\' is not a valid letter: %s\n-------------\n", input[0], wordFormatted);
       if (!isLetterNew)
         printf("Oops! You've already guessed that letter: %s\n-------------\n", wordFormatted);
     }
