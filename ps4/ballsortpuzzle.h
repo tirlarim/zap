@@ -18,13 +18,10 @@
 //#include "printColors.h"
 //#endif
 
-
-#ifdef CUSTOM_ARENA_ALLOWED
 typedef struct Arena {
   unsigned int sizeX, sizeY;
   unsigned char** data;
 }ARENA;
-#endif
 
 /**
  * Function draw game field

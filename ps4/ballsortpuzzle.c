@@ -111,24 +111,35 @@ void generator(ARENA* arena) {
 }
 
 void down_possible(ARENA* arena, unsigned int x, unsigned int y) {
-  unsigned int sizeY = arena->sizeY - 1, sizeX = arena->sizeX - 1;
-  unsigned char currentSymbol;
-  --x;
-  --y;
-  if (x > sizeX != 0 || y > sizeX || x == y || arena->data[0][y] != BLANK || arena->data[sizeY][x] == BLANK) {
-    printf("Unable to move from column %d to %d -> try different column\n", x, y);
+  unsigned int sizeY = rows-1, sizeX = columns-1;
+  char currentSymbol;
+  char symbolDst = BLANK;
+  --x; --y;
+  if (x < 0 || x > sizeX || y < 0 || y > sizeX || x == y || field[0][y] != BLANK || field[sizeY][x] == BLANK) {
+    drawError();
     return;
   }
-  for (unsigned int i = 0; i < arena->sizeY; ++i) {
-    if (arena->data[i][x] != BLANK) {
-      currentSymbol = arena->data[i][x];
-      arena->data[i][x] = BLANK;
+  for (int i = 0; i < rows; ++i) {
+    if (field[i][y] != BLANK) {
+      symbolDst = field[i][y];
       break;
     }
   }
-  for (unsigned int i = sizeY; i <= sizeY; --i) {
-    if (arena->data[i][y] == BLANK) {
-      arena->data[i][y] = currentSymbol;
+  for (int i = 0; i < rows; ++i) {
+    if (field[i][x] != BLANK) {
+      currentSymbol = field[i][x];
+      if (symbolDst == BLANK || symbolDst == currentSymbol) {
+        field[i][x] = BLANK;
+        break;
+      } else {
+        drawError();
+        return;
+      }
+    }
+  }
+  for (int i = rows; i >= 0; --i) {
+    if (field[i][y] == BLANK) {
+      field[i][y] = currentSymbol;
       break;
     }
   }
@@ -287,16 +298,28 @@ void generator(const int rows, const int columns, char field[][columns]) {
 void down_possible(const int rows, const int columns, char field[][columns], int x, int y) {
   unsigned int sizeY = rows-1, sizeX = columns-1;
   char currentSymbol;
+  char symbolDst = BLANK;
   --x; --y;
   if (x < 0 || x > sizeX || y < 0 || y > sizeX || x == y || field[0][y] != BLANK || field[sizeY][x] == BLANK) {
     printf("Unable to move from column %d to %d -> try different column\n", x, y);
     return;
   }
   for (int i = 0; i < rows; ++i) {
+    if (field[i][y] != BLANK) {
+      symbolDst = field[i][y];
+      break;
+    }
+  }
+  for (int i = 0; i < rows; ++i) {
     if (field[i][x] != BLANK) {
       currentSymbol = field[i][x];
-      field[i][x] = BLANK;
-      break;
+      if (symbolDst == BLANK || symbolDst == currentSymbol) {
+        field[i][x] = BLANK;
+        break;
+      } else {
+        printf("Unable to move from column %d to %d -> try different column\n", x, y);
+        return;
+      }
     }
   }
   for (int i = rows; i >= 0; --i) {

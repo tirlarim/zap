@@ -24,6 +24,7 @@ enum Colors {
 void initCurses();
 void deinitCurses();
 void drawArena(ARENA* arena);
+void drawError();
 void drawHappyEnd();
 
 #ifdef CURSES_ALLOWED

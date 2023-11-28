@@ -92,6 +92,10 @@ void getTerminalSize(unsigned short* sizeY, unsigned short* sizeX) {
   *sizeX = terminalSize.ws_col;
 }
 
+void drawError() {
+  printw("Unable to move, try different column\n");
+}
+
 #else
 
 void printArena(unsigned short **arena,
