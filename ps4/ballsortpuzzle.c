@@ -4,9 +4,10 @@
 #include <time.h>
 #include "ballsortpuzzle.h"
 
-#ifdef HAPPY_GAME_END
-#include "printColors.h"
-#endif
+// disable for arena compilation
+//#ifdef HAPPY_GAME_END
+//#include "printColors.h"
+//#endif
 
 #define VOID_COLUMNS_COUNT 2
 #define MIN_ARENA_SIZE_X 4
@@ -320,6 +321,29 @@ void game_field(const int rows, const int columns, char field[][columns]) {
     printf("  %2d", i+1);
   }
   printf("\n");
+}
+
+
+void ball_sort_puzzle() {
+  int sizeY = 4, sizeX = 6;
+  char arena[4][6] = {0};
+  if (sizeY > MAX_ARENA_SIZE_Y || sizeX < MIN_ARENA_SIZE_X || sizeY < MIN_ARENA_SIZE_Y) {
+    printf(":^)");
+    exit(1);
+  }
+  generator(sizeY, sizeX, arena);
+  while (!check(sizeY, sizeX,arena)) {
+    game_field(sizeY, sizeX,arena);
+    int from, to;
+    printf("Enter what: ");
+    scanf("%d", &from);
+    printf("Enter where: ");
+    scanf("%d", &to);
+    printf("\n");
+    down_possible(sizeY, sizeX, arena, from, to);
+  }
+  game_field(sizeY, sizeX, arena);
+  printf("Congratulations! You won!\n");
 }
 #endif
 

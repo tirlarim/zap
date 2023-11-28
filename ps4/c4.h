@@ -1,7 +1,8 @@
 #ifndef CONNECT_FOUR_H
 #define CONNECT_FOUR_H
 
-#define CUSTOM_HEADER_ALLOWED
+// disable for arena compilation
+//#define CUSTOM_HEADER_ALLOWED
 
 /**
  * @brief Initializes the game board.

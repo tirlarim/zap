@@ -5,13 +5,14 @@
 
 #define BLANK ' '
 
-#define CUSTOM_ARENA_ALLOWED
-#ifdef __APPLE__
-#define HAPPY_GAME_END
-#endif
-#ifdef __linux__
-#define HAPPY_GAME_END
-#endif
+// disable for arena compilation
+//#define CUSTOM_ARENA_ALLOWED
+//#ifdef __APPLE__
+//#define HAPPY_GAME_END
+//#endif
+//#ifdef __linux__
+//#define HAPPY_GAME_END
+//#endif
 
 typedef struct Arena {
   unsigned int sizeX, sizeY;
