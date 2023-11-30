@@ -10,7 +10,7 @@
 
 int main() {
 //  ball_sort_puzzle();
-
+//  char field[sizeY][sizeX] = {0};
 //  char** field = (char**)malloc(sizeY*sizeof(*field));
 //  for (int i = 0; i < sizeY; ++i) {
 //    field[i] = (char*)calloc(sizeX, sizeof(*field[i]));

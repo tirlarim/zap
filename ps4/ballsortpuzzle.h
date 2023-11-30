@@ -7,19 +7,19 @@
 
 ////TODO: disable for arena compilation
 //#define CUSTOM_ARENA_ALLOWED
-//#ifdef __APPLE__
 //#define HAPPY_GAME_END
-//#endif
-//#ifdef __linux__
-//#define HAPPY_GAME_END
-//#endif
 
-//#ifdef HAPPY_GAME_END
-//#include "printColors.h"
-//#endif
+#ifdef HAPPY_GAME_END
+#ifdef __APPLE__
+#include "printColors.h"
+#endif
+#ifdef __linux__
+#include "printColors.h"
+#endif
+#endif
 
 typedef struct Arena {
-  unsigned int sizeX, sizeY;
+  unsigned short sizeX, sizeY;
   unsigned char** data;
 }ARENA;
 

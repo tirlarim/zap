@@ -2,13 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include "ballsortpuzzle.h"
 
 //TODO: disable for arena compilation
-//#include "graphic.h"
-//#ifdef HAPPY_GAME_END
-//#include "printColors.h"
-//#endif
+#ifdef CURSES_ALLOWED
+#include "graphic.h"
+#endif
+#ifdef HAPPY_GAME_END
+#include "printColors.h"
+#endif
 
 #define VOID_COLUMNS_COUNT 2
 #define MIN_ARENA_SIZE_X 4
@@ -78,7 +81,7 @@ void generator(ARENA* arena) {
   bool isGenerationIncorrect = true;
   while (isGenerationIncorrect) {
     unsigned int filledColumnsCount = arena->sizeX - VOID_COLUMNS_COUNT, itemsCount =
-        arena->sizeY * filledColumnsCount, currentItemIndex = 0;;
+        arena->sizeY * filledColumnsCount, currentItemIndex = 0;
     unsigned char* items = calloc(itemsCount, sizeof(*items));
     unsigned int* voidIndexes = calloc(VOID_COLUMNS_COUNT, sizeof(*voidIndexes));
     if (arena->sizeY > MAX_ARENA_SIZE_Y) {
@@ -111,25 +114,25 @@ void generator(ARENA* arena) {
 }
 
 void down_possible(ARENA* arena, unsigned int x, unsigned int y) {
-  unsigned int sizeY = rows-1, sizeX = columns-1;
-  char currentSymbol;
-  char symbolDst = BLANK;
+  unsigned int sizeY = arena->sizeY-1, sizeX = arena->sizeX-1;
+  unsigned char currentSymbol;
+  unsigned char symbolDst = BLANK;
   --x; --y;
-  if (x < 0 || x > sizeX || y < 0 || y > sizeX || x == y || field[0][y] != BLANK || field[sizeY][x] == BLANK) {
+  if (x > sizeX || y > sizeX || x == y || arena->data[0][y] != BLANK || arena->data[sizeY][x] == BLANK) {
     drawError();
     return;
   }
-  for (int i = 0; i < rows; ++i) {
-    if (field[i][y] != BLANK) {
-      symbolDst = field[i][y];
+  for (int i = 0; i < arena->sizeY; ++i) {
+    if (arena->data[i][y] != BLANK) {
+      symbolDst = arena->data[i][y];
       break;
     }
   }
-  for (int i = 0; i < rows; ++i) {
-    if (field[i][x] != BLANK) {
-      currentSymbol = field[i][x];
+  for (int i = 0; i < arena->sizeY; ++i) {
+    if (arena->data[i][x] != BLANK) {
+      currentSymbol = arena->data[i][x];
       if (symbolDst == BLANK || symbolDst == currentSymbol) {
-        field[i][x] = BLANK;
+        arena->data[i][x] = BLANK;
         break;
       } else {
         drawError();
@@ -137,9 +140,9 @@ void down_possible(ARENA* arena, unsigned int x, unsigned int y) {
       }
     }
   }
-  for (int i = rows; i >= 0; --i) {
-    if (field[i][y] == BLANK) {
-      field[i][y] = currentSymbol;
+  for (int i = sizeY; i >= 0; --i) {
+    if (arena->data[i][y] == BLANK) {
+      arena->data[i][y] = currentSymbol;
       break;
     }
   }
@@ -199,10 +202,20 @@ void gameTick(ARENA* arena) {
 
 void ball_sort_puzzle() {
   ARENA arena;
+  char inputBfX[10] = {0}, inputBfY[10] = {0};
+  unsigned short terminalSizeX = 0, terminalSizeY = 0;
+  getTerminalSize(&terminalSizeY, &terminalSizeX);
   printf("Enter arena size [X Y]:\n");
-  scanf("%u %u", &arena.sizeX, &arena.sizeY);
-  if (arena.sizeY > MAX_ARENA_SIZE_Y || arena.sizeX < MIN_ARENA_SIZE_X || arena.sizeY < MIN_ARENA_SIZE_Y) {
-    printf(ANSI_COLOR_RED":^)");
+  scanf("%s %s", inputBfX, inputBfY);
+  for(unsigned char i = 0; inputBfX[i]; i++) inputBfX[i] = (char)tolower(inputBfX[i]);
+  for(unsigned char i = 0; inputBfY[i]; i++) inputBfY[i] = (char)tolower(inputBfY[i]);
+  if (strcmp(inputBfX, "auto") == 0) arena.sizeY = terminalSizeY-4;
+  else arena.sizeY = strtoul(inputBfX, NULL, 10);
+  if (strcmp(inputBfY, "auto") == 0) arena.sizeX = (terminalSizeX/4)-2;
+  else arena.sizeX = strtoul(inputBfY, NULL, 10);
+  if (arena.sizeY > MAX_ARENA_SIZE_Y || arena.sizeY < MIN_ARENA_SIZE_Y || arena.sizeY > terminalSizeY-4 ||
+      arena.sizeX < MIN_ARENA_SIZE_X || arena.sizeX > (terminalSizeX/4)-2) {
+    printf(ANSI_COLOR_RED":^)\n"ANSI_COLOR_RESET);
     exit(1);
   }
 #ifdef CURSES_ALLOWED
@@ -220,22 +233,10 @@ void ball_sort_puzzle() {
   // I want to load Trojan as reward on PC someone lucky who win this game
   // But many <Congratulations!!!!!!> is also great idea.
 #ifdef CURSES_ALLOWED
-  drawHappyEnd();
   deinitCurses();
-#elifdef HAPPY_GAME_END
-  const char colorsUnix[7][8] = { // Have no idea is this work or not on win cmd/powershell
-    ANSI_COLOR_RED,
-    ANSI_COLOR_GREEN,
-    ANSI_COLOR_YELLOW,
-    ANSI_COLOR_BLUE,
-    ANSI_COLOR_MAGENTA,
-    ANSI_COLOR_CYAN,
-    ANSI_COLOR_RESET,
-};
-  for (unsigned int i = 0; i < 1024; ++i) {
-    if (!(i & 7)) printf("\n");
-    printf("%s Congratulations! %s You %s won! ", colorsUnix[rand()%7], colorsUnix[rand()%7], colorsUnix[rand()%7]);
-  }
+#endif
+#ifdef HAPPY_GAME_END
+  drawHappyEnd();
 #else
   printf("Congratulations! You won!\n");
 #endif

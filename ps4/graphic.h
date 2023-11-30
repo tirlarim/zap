@@ -1,7 +1,8 @@
 #ifndef ZAP_2023_8748_GRAPHIC_H
 #define ZAP_2023_8748_GRAPHIC_H
 
-#define CURSES_ALLOWED
+
+//#define CURSES_ALLOWED
 #include <stdbool.h>
 #ifdef CURSES_ALLOWED
 #include <curses.h>
@@ -25,12 +26,15 @@ void initCurses();
 void deinitCurses();
 void drawArena(ARENA* arena);
 void drawError();
+void drawBoard(int rows, int cols, const char board[][cols]);
 void drawHappyEnd();
 
 #ifdef CURSES_ALLOWED
 void printTestFrame();
 void getTerminalSize(unsigned short* sizeY, unsigned short* sizeX);
 void getUserInput(unsigned int* from, unsigned int* to);
+void getInputC4(bool isPlayer1Active, int cols, int* colCurrent);
+void drawWinC4(bool isPlayer1Active);
 #endif
 
 #endif //ZAP_2023_8748_GRAPHIC_H
