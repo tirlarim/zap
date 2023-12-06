@@ -16,24 +16,23 @@ unsigned long getWordLen(const char* word) {
 
 long getWordIndex(FILE* fp, const char* word) {
   long index = 0;
-  char wordBf[WORD_LEN] = {0}, bfIndex = 0;
+  char wordBf = 0, bfIndex = 0;
   bool possibleWord = true;
   unsigned long wordLen = getWordLen(word);
-//  for (; word[wordLen] != '\0'; ++wordLen);
   do {
     if (bfIndex == wordLen) return index - bfIndex;
     ++index;
-    wordBf[bfIndex] = (char)getc(fp);
-    if (wordBf[bfIndex] == SEPARATOR) {
+    wordBf = (char)getc(fp);
+    if (wordBf == SEPARATOR) {
       possibleWord = true;
       continue;
     }
-    if (possibleWord && wordBf[bfIndex] == word[bfIndex]) ++bfIndex;
+    if (possibleWord && wordBf == word[bfIndex]) ++bfIndex;
     else {
       bfIndex = 0;
       possibleWord = false;
     }
-  } while (wordBf[bfIndex] != EOF);
+  } while (wordBf != EOF);
   return -1;
 }
 
