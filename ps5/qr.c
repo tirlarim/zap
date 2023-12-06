@@ -2,22 +2,17 @@
 #include <stdbool.h>
 #include <string.h>
 
-// All code here terrible, but I have no time to make it better
-// TODO: rewrite main & (delete | hide) func with vla
+// TODO: push after 3 Dec. 2023 12:00
 
 #define BITS_PER_BYTE 8
 
 typedef union bit_to_char {
   unsigned char character;
   struct bit {
-    unsigned b0: 1;
-    unsigned b1: 1;
-    unsigned b2: 1;
-    unsigned b3: 1;
-    unsigned b4: 1;
-    unsigned b5: 1;
-    unsigned b6: 1;
-    unsigned b7: 1;
+    unsigned b0: 1; unsigned b1: 1;
+    unsigned b2: 1; unsigned b3: 1;
+    unsigned b4: 1; unsigned b5: 1;
+    unsigned b6: 1; unsigned b7: 1;
   } mbit;
 } BIT_TO_CHAR;
 
@@ -74,7 +69,7 @@ void bytes_to_blocks(const int cols, const int offset, bool blocks[][cols], cons
       *(blockPtr+(i*blockSize+(j*cols+j/BITS_PER_BYTE)%blockSize)) = bytesPtr < bytesMaxOffset ? *(bytesPtr++) : 0;
 }
 
-void blocks_to_bytes(const int cols, const int offset, bool blocks[][cols], const int rows, bool bytes[][8]) {
+void blocks_to_bytes(const int cols, const int offset, bool blocks[][cols], const int rows, bool bytes[][BITS_PER_BYTE]) {
   bool *bytesPtr = (bool*)bytes, *blockPtr = (bool*)blocks;
   unsigned int blockSize = cols*BITS_PER_BYTE;
   for (int i = 0; i < offset; ++i)
@@ -123,27 +118,30 @@ int main() {
   printf("%s\n", string);
 #endif
 #ifdef TASK3
-  int length = 4+1, cols = 3, offset = 2;
-  bool bytes1[4+1][8] = {
+#define BYTES1_SIZE_Y 5
+#define BLOCK1_SIZE_Y (2*BITS_PER_BYTE)
+#define BLOCK_SIZE_X 3
+  int length = BYTES1_SIZE_Y, cols = BLOCK_SIZE_X, offset = BLOCK1_SIZE_Y/BITS_PER_BYTE;
+  bool bytes1[BYTES1_SIZE_Y][BITS_PER_BYTE] = {
       {0,1,0,0,0,0,0,1},
       {0,1,1,0,1,0,0,0},
       {0,1,1,0,1,1,1,1},
       {0,1,1,0,1,0,1,0},
       {0,0,0,0,0,0,0,1},
   };
-  bool blocks1[offset*8][cols];
+  bool blocks1[BLOCK1_SIZE_Y][BLOCK_SIZE_X];
   bytes_to_blocks(cols, offset, blocks1, length, bytes1);
-  for(int j = 0; j < offset*8; j++){
-    for(int i = 0; i < cols; i++){
-      printf("%d ", blocks1[j][i]);
+  for(unsigned int i = 0; i < length; ++i){
+    for(unsigned int j = 0; j < cols; ++j){
+      printf("%d ", blocks1[i][j]);
     }
     printf("\n");
-    if(j % 8 == 7){
+    if(!((i+1)&7)){
       printf("\n");
     }
   }
 
-  bool blocks2[2*8][3] = {
+  bool blocks2[BLOCK1_SIZE_Y][BLOCK_SIZE_X] = {
       {0,0,0},
       {1,1,1},
       {0,1,1},
@@ -161,10 +159,10 @@ int main() {
       {1,0,0},
       {0,0,0}
   };
-  bool bytes2[length][8];
-  blocks_to_bytes(3, 2, blocks2, length, bytes2);
+  bool bytes2[length][BITS_PER_BYTE];
+  blocks_to_bytes(BLOCK_SIZE_X, BLOCK1_SIZE_Y/BITS_PER_BYTE, blocks2, length, bytes2);
   for(int j = 0; j < length; j++){
-    for(int i = 0; i < 8; i++){
+    for(int i = 0; i < BITS_PER_BYTE; i++){
       printf("%d", bytes2[j][i]);
     }
     printf("\n");
