@@ -2,8 +2,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-// TODO: push after 3 Dec. 2023 12:00
-
 #define BITS_PER_BYTE 8
 
 typedef union bit_to_char {

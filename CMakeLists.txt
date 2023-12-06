@@ -25,5 +25,6 @@ elseif (currentProblemSet EQUAL 6)
     add_executable(ps6 ps6/main.c ps6/life/engine.c ps6/life/graphic.c ps6/utils/utils.c) #ps6
     target_link_libraries(ps6 curses)
 elseif (currentProblemSet EQUAL 7)
-    add_executable(ps7 ps7/count_words.c ps7/every_second.c) #ps7
+    add_executable(ps7-1 ps7/count_words.c) #ps7
+    add_executable(ps7-2 ps7/every_second.c) #ps7
 endif ()
