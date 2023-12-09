@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.26)
 project(zap-2023-8748 C)
 
-set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
-#set(CMAKE_C_FLAGS "-Werror -Wall")
+set(CMAKE_C_FLAGS "-Werror -Wall")
 set(CMAKE_C_FLAGS "-Werror=vla -march=native")
 
-set(currentProblemSet 7)
+set(currentProblemSet 6)
 add_compile_definitions(DEBUG_FLAG)
 
 if (currentProblemSet EQUAL 1)

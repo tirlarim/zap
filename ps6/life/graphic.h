@@ -1,18 +1,14 @@
 #ifndef ZAP_2023_8748_GRAPHIC_H
 #define ZAP_2023_8748_GRAPHIC_H
 
-#define FPS 30
-#define CURSES_ALLOWED
+#include "engine.h"
 #include <stdbool.h>
-#ifdef CURSES_ALLOWED
 #include <curses.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#else
-#include <stdio.h>
-#endif
 
 #define LOGO_PATH "./media/logo_79.txt"
+#define FPS 30
 
 enum Colors {
   RED_ON_BLACK = 1,
@@ -22,15 +18,10 @@ enum Colors {
 
 void initCurses();
 void deinitCurses();
-void printArena(unsigned short **arena, unsigned short sizeY, unsigned short sizeX,
-                unsigned int step, unsigned int aliveCount);
-void drawNewFrame(unsigned short** arena, unsigned short sizeY, unsigned short sizeX,
-                  unsigned int aliveCount, unsigned int tickCount, bool isAlive);
-
-#ifdef CURSES_ALLOWED
+void printArena(ARENA* arena, unsigned int step);
+void drawNewFrame(ARENA* arena, unsigned int tickCount, bool isAlive);
 void printTestFrame();
 void drawLogo();
 void getTerminalSize(unsigned short* sizeY, unsigned short* sizeX);
-#endif
 
 #endif //ZAP_2023_8748_GRAPHIC_H

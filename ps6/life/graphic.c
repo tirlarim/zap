@@ -3,9 +3,12 @@
 #include "graphic.h"
 #include "../utils/utils.h"
 
-struct winsize terminalSize;
+typedef struct Terminal {
+  unsigned short sizeY, sizeX, availableSizeX, availableSizeY;
+}TERMINAL;
 
-#ifdef CURSES_ALLOWED
+struct winsize terminalSize;
+struct Terminal terminalWindow;
 
 void initCurses() {
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &terminalSize);
@@ -61,49 +64,34 @@ void drawLogo() {
   refresh();
 }
 
-void printArena(unsigned short** arena, unsigned short sizeY, unsigned short sizeX, unsigned int step,
-                unsigned int aliveCount) {
+void printArena(ARENA* arena, unsigned int step) {
   clear();
-  mvprintw(0, 0, "Step: %d, alive: %u\n", step, aliveCount);
-  for (unsigned short i = 0; i < terminalSize.ws_row-1; ++i) {
-    for (unsigned short j = 0; j < terminalSize.ws_col-1; ++j) {
-      printw(i < sizeY && j < sizeX ? arena[i][j] ? "x" : " " : " ");
+  mvprintw(0, 0, "Step: %d, alive: %u\n", step, arena->aliveCount);
+  for (unsigned short i = 0; i < terminalWindow.availableSizeY; ++i) {
+    for (unsigned short j = 0; j < terminalWindow.availableSizeX; ++j) {
+      printw(i < arena->sizeY && j < arena->sizeX ? arena->filed[i][j] == 1 ? "x" : " " : " ");
     }
-    printw("\n");
   }
 }
 
-void drawNewFrame(unsigned short** arena, unsigned short sizeY, unsigned short sizeX,
-                  unsigned int aliveCount, unsigned int tickCount, bool isAlive) {
-  if (isAlive) printArena(arena, sizeY, sizeX, tickCount, aliveCount);
+void drawNewFrame(ARENA* arena, unsigned int tickCount, bool isAlive) {
+  if (isAlive) printArena(arena, tickCount);
   else printw("End life step %u\n", tickCount);
   refresh();
   milliSleep(1000 / FPS);
 }
 
+void updateWindowInfo() {
+  unsigned short usedRows = 1;
+  unsigned short usedColumns = 0;
+  terminalWindow.sizeY = terminalSize.ws_row;
+  terminalWindow.sizeX = terminalSize.ws_col;
+  terminalWindow.availableSizeY = terminalSize.ws_row-usedRows;
+  terminalWindow.availableSizeX = terminalSize.ws_col-usedColumns;
+}
+
 void getTerminalSize(unsigned short* sizeY, unsigned short* sizeX) {
-  *sizeY = terminalSize.ws_row;
-  *sizeX = terminalSize.ws_col;
+  updateWindowInfo();
+  *sizeY = terminalWindow.availableSizeY;
+  *sizeX = terminalWindow.availableSizeX;
 }
-
-#else
-
-void printArena(unsigned short **arena,
-                unsigned short sizeY, unsigned short sizeX,
-                unsigned int step, unsigned int aliveCount) {
-  printf("Step: %d, alive: %u\n", step, aliveCount);
-  for (unsigned short i = 0; i < sizeY; ++i) {
-    for (unsigned short j = 0; j < sizeX; ++j) {
-      printf(arena[i][j] ? "x" : " ");
-    }
-    printf("\n");
-  }
-}
-
-void drawNewFrame(unsigned short** arena, unsigned short sizeY, unsigned short sizeX,
-                  unsigned int aliveCount, unsigned int tickCount, bool isAlive) {
-  if (isAlive) printArena(arena, sizeY, sizeX, tickCount, aliveCount);
-  else printf("End life step %u\n", tickCount);
-}
-
-#endif

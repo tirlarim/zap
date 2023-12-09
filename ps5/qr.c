@@ -75,8 +75,6 @@ void blocks_to_bytes(const int cols, const int offset, bool blocks[][cols], cons
       *(bytesPtr++) = *(blockPtr+(i*blockSize+(j*cols+j/BITS_PER_BYTE)%blockSize));
 }
 
-#define TASK3
-
 int main() {
 #ifdef TASK1
   bool bits1[BITS_PER_BYTE] = {0};

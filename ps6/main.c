@@ -9,8 +9,6 @@ int main(int argc, char** argv) {
   initCurses();
   play(argv[1]);
 //  drawLogo();
-//  getchar();
-//  getchar(); // any ideas why if I write only one getchar(), it doesn't work?
   deinitCurses();
   return 0;
 }

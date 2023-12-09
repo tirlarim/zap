@@ -41,8 +41,7 @@ void task(char* fileNameInput, char* filenameOutput) {
   FILE* fileInput = fopen(fileNameInput, "r");
   FILE* fileOutput = fopen(filenameOutput, "w");
   bool flag = true;
-  unsigned long startWordLen = getWordLen(START_WORD),
-  endWordLen = getWordLen(END_WORD), fileIndex = 0;
+  unsigned long startWordLen = getWordLen(START_WORD), fileIndex = 0;
   long startIndex = getWordIndex(fileInput, START_WORD),
   endIndex = getWordIndex(fileInput, END_WORD)+startIndex;
   fclose(fileInput);
@@ -50,10 +49,8 @@ void task(char* fileNameInput, char* filenameOutput) {
   fileInput = fopen(FILENAME_INPUT, "r");
   do {
     word[bfIndex] = (char)getc(fileInput); // -1 to hide space
-    if (flag && fileIndex > startIndex + startWordLen && fileIndex < endIndex + startWordLen -1) {
+    if (flag && fileIndex > startIndex + startWordLen && fileIndex < endIndex + startWordLen -1)
       putc(word[bfIndex], fileOutput);
-//      printf("%c", word[bfIndex]);
-    }
     if (word[bfIndex] == SEPARATOR) flag = !flag;
     ++fileIndex;
   } while (word[bfIndex] != EOF);

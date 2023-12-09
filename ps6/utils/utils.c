@@ -1,6 +1,14 @@
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
+#ifdef _WIN32
+#include <windows.h>
+#elif __APPLE__
+#include <sys/sysctl.h>
+#include <unistd.h>
+#else
+#include <unistd.h>
+#endif
 
 
 int milliSleep(long milliseconds) {
@@ -33,3 +41,34 @@ int max(int a, int b) {
 int min(int a, int b) {
   return a < b ? a : b;
 }
+
+#ifdef _WIN32
+unsigned char getNumberOfCores() {
+  SYSTEM_INFO sysinfo;
+  GetSystemInfo(&sysinfo);
+  return sysinfo.dwNumberOfProcessors;
+}
+#endif
+
+#ifdef __APPLE__
+unsigned char getNumberOfCores() {
+  int nm[2];
+  size_t len = 4;
+  uint32_t count;
+  nm[0] = CTL_HW;
+  nm[1] = HW_AVAILCPU;
+  sysctl(nm, 2, &count, &len, NULL, 0);
+  if (count < 1) {
+    nm[1] = HW_NCPU;
+    sysctl(nm, 2, &count, &len, NULL, 0);
+    if (count < 1) { count = 1; }
+  }
+  return count;
+}
+#endif
+
+#ifdef __linux__
+unsigned char getNumberOfCores() {
+  return sysconf(_SC_NPROCESSORS_ONLN);
+}
+#endif
