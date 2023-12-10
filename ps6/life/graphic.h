@@ -8,15 +8,16 @@
 #include <unistd.h>
 
 #define LOGO_PATH "./media/logo_79.txt"
+#define TEXT_LOGO_PATH "./media/logo-ascii.txt"
 #define FPS 30
-
-#define KEY_EXIT_GAME 'q'
 #define KEY_MOVE_UP 'w'
 #define KEY_MOVE_DOWN 's'
 #define KEY_MOVE_LEFT 'a'
 #define KEY_MOVE_RIGHT 'd'
-#define KEY_UP_TPF 'e'
-#define KEY_DOWN_TPF 'q'
+
+typedef struct Point2D {
+  unsigned short y, x;
+}POINT_2D;
 
 enum Colors {
   RED_ON_BLACK = 1,
@@ -26,12 +27,13 @@ enum Colors {
 
 void initCurses();
 void deinitCurses();
-void printArena(ARENA* arena, unsigned int step);
-void drawNewFrame(ARENA* arena, unsigned int tickCount, bool isAlive);
+void drawNewFrame(ARENA* arena, SETTINGS* settings, unsigned int tickCount, bool isAlive);
 void printTestFrame();
 void drawLogo();
+void drawTextLogo();
 void updateWindowInfo(ARENA* arena);
 void getTerminalSize(unsigned short* sizeY, unsigned short* sizeX);
-bool inputWorker(int key); // if return false end/stop game
+void graphicInputWorker(ARENA* arena, SETTINGS* settings, int key);
+void getCursorPos(POINT_2D* pos);
 
 #endif //ZAP_2023_8748_GRAPHIC_H

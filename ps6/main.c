@@ -7,8 +7,9 @@ int main(int argc, char** argv) {
     return 1;
   }
   initCurses();
+  drawTextLogo();
+  sleep(1);
   play(argv[1]);
-//  drawLogo();
   deinitCurses();
   return 0;
 }

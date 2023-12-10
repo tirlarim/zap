@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
@@ -18,7 +17,6 @@ typedef struct ThreadArgs {
   struct Position position;
 }THREAD_ARGS;
 
-unsigned char threadsCount;
 pthread_t* threads;
 THREAD_ARGS* threadsArgs;
 
@@ -40,12 +38,12 @@ void destroyArena(ARENA* arena) {
   free(arena->buffer);
 }
 
-void threadsPrepare(ARENA* arena) {
+void threadsPrepare(ARENA* arena, SETTINGS* settings) {
   unsigned int blocksPerThread; // possibly needs UINT64
-  threadsArgs = (THREAD_ARGS*)malloc(threadsCount * sizeof(THREAD_ARGS));
-  threads = (pthread_t*)malloc(threadsCount * sizeof(pthread_t));
-  blocksPerThread = (arena->sizeY * arena->sizeX) / threadsCount;
-  for (int i = 0; i < threadsCount; ++i) {
+  threadsArgs = (THREAD_ARGS*)malloc(settings->threadsCount * sizeof(THREAD_ARGS));
+  threads = (pthread_t*)malloc(settings->threadsCount * sizeof(pthread_t));
+  blocksPerThread = (arena->sizeY * arena->sizeX) / settings->threadsCount;
+  for (int i = 0; i < settings->threadsCount; ++i) {
     unsigned int absoluteStartIndex = blocksPerThread * i;
     unsigned int absoluteEndIndex = absoluteStartIndex + blocksPerThread - 1;
     threadsArgs[i].position.startY = absoluteStartIndex / arena->sizeX;
@@ -55,8 +53,8 @@ void threadsPrepare(ARENA* arena) {
     threadsArgs[i].arena = arena;
     threadsArgs[i].aliveCount = 0;
   }
-  threadsArgs[threadsCount - 1].position.endY = arena->sizeY - 1;
-  threadsArgs[threadsCount - 1].position.endX = arena->sizeX;
+  threadsArgs[settings->threadsCount - 1].position.endY = arena->sizeY - 1;
+  threadsArgs[settings->threadsCount - 1].position.endX = arena->sizeX;
 }
 
 void destroyThreadsData() {
@@ -187,7 +185,7 @@ void* taskSIMD(void* args) {
 }
 
 
-bool tickArena(ARENA* arena) {
+bool tickArena(ARENA* arena, SETTINGS* settings) {
   arena->aliveCount = 0;
 #ifdef DEBUG_LVL1
   printf("Block size: %d\n", blocksPerThread);
@@ -195,7 +193,7 @@ bool tickArena(ARENA* arena) {
     printf("thread %d: [%d %d] -> [%d %d) | tasks: %d\n", i, positions[i].startY, positions[i].startX,
            positions[i].endY, positions[i].endX, (positions[i].endY - positions[i].startY)*arena.sizeY+(positions[i].endX-positions[i].startX));
 #endif
-  for (unsigned int i = 0; i < threadsCount; ++i) {
+  for (unsigned int i = 0; i < settings->threadsCount; ++i) {
 #ifdef __AVX2__
     if (pthread_create(&threads[i], NULL, &taskSIMD, &threadsArgs[i])) {
       perror("\nPthread create has failed\n");
@@ -208,7 +206,7 @@ bool tickArena(ARENA* arena) {
     }
 #endif
   }
-  for (unsigned int i = 0; i < threadsCount; ++i) {
+  for (unsigned int i = 0; i < settings->threadsCount; ++i) {
     if (pthread_join(threads[i], NULL)) {
       perror("\nPthread join has failed\n");
       return EXIT_THREAD_JOIN_FAILURE;
@@ -222,31 +220,67 @@ bool tickArena(ARENA* arena) {
   return isAlive;
 }
 
+void prepareSettings(SETTINGS* settings) {
+  settings->tickPerFrame = 1;
+  settings->tickPerFrameMAX = UINT16_MAX;
+  settings->tickPerFrameMIN = 1;
+  settings->threadsCount = getNumberOfCores();
+}
+
+bool engineInputWorker(ARENA* arena, SETTINGS* settings, int key) {
+  switch (key) {
+    case KEY_EXIT_GAME:
+      return false;
+    case KEY_UP_TPF:
+      if (settings->tickPerFrame != settings->tickPerFrameMAX) ++settings->tickPerFrame;
+      break;
+    case KEY_DOWN_TPF:
+      if (settings->tickPerFrame) --settings->tickPerFrame;
+      break;
+    case KEY_PAUSE:
+      settings->pause = !settings->pause;
+      break;
+    case KEY_CREATE_CELL:
+      if (settings->pause) {
+        POINT_2D pos;
+        getCursorPos(&pos);
+        arena->field[pos.y][pos.x] = !arena->field[pos.y][pos.x];
+      }
+      break;
+    default:
+      break;
+  }
+  return true;
+}
+
 void play(char* mapPath) {
-  ARENA arena = {};
-  POINT_2D terminal = {}, reqArenaSize = {};
+  ARENA arena = {0};
+  POINT_2D terminal = {0}, reqArenaSize = {0};
+  SETTINGS settings = {0};
   FILE* inputFp = fopen(mapPath, "rt");
   struct timespec start, end, sleepTime;
-  long sleepFrameTime = (1000000000 / FPS);
-  long elapsedNanosec;
+  long sleepFrameTime = (1000000000 / FPS), elapsedNanosec;
   unsigned int tickCount = 0;
+  int key;
   bool isAlive = true;
   sleepTime.tv_sec = 0;
-  threadsCount = getNumberOfCores();
   getTerminalSize(&terminal.y, &terminal.x);
   fscanf(inputFp, "%hd %hd", &reqArenaSize.y, &reqArenaSize.x);
   arena.sizeY = reqArenaSize.y < terminal.y ? terminal.y : reqArenaSize.y;
   arena.sizeX = reqArenaSize.x < terminal.x ? terminal.x : reqArenaSize.x;
+  prepareSettings(&settings);
   init2DArena(&arena);
-  threadsPrepare(&arena);
+  threadsPrepare(&arena, &settings);
   updateWindowInfo(&arena);
   fscanArena(inputFp, &arena, &reqArenaSize);
   fclose(inputFp);
   while (isAlive) {
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
-    isAlive = tickArena(&arena);
-    if (inputWorker(getch())) break;
-    drawNewFrame(&arena, tickCount++, isAlive);
+    key = getch();
+    for (int i = 0; !settings.pause && i < settings.tickPerFrame; ++i) isAlive = tickArena(&arena, &settings);
+    if (!engineInputWorker(&arena, &settings, key)) break;
+    graphicInputWorker(&arena, &settings, key);
+    drawNewFrame(&arena, &settings, tickCount++, isAlive);
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
     elapsedNanosec = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
     sleepTime.tv_nsec = sleepFrameTime - elapsedNanosec;
