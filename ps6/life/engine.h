@@ -7,8 +7,8 @@
 #define EXIT_THREAD_JOIN_FAILURE 12
 
 typedef struct Arena {
-  unsigned char** filed;
-  unsigned char** buffer;
+  unsigned char** field __attribute__((aligned(32)));
+  unsigned char** buffer __attribute__((aligned(32)));
   unsigned long aliveCount;
   int sizeY, sizeX;
 }ARENA;

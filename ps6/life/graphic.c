@@ -69,7 +69,7 @@ void printArena(ARENA* arena, unsigned int step) {
   mvprintw(0, 0, "Step: %d, alive: %u\n", step, arena->aliveCount);
   for (unsigned short i = 0; i < terminalWindow.availableSizeY; ++i) {
     for (unsigned short j = 0; j < terminalWindow.availableSizeX; ++j) {
-      printw(i < arena->sizeY && j < arena->sizeX ? arena->filed[i][j] == 1 ? "x" : " " : " ");
+      printw(i < arena->sizeY && j < arena->sizeX ? arena->field[i][j] == 1 ? "x" : " " : " ");
     }
   }
 }
