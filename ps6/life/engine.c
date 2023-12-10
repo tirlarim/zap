@@ -18,10 +18,6 @@ typedef struct ThreadArgs {
   struct Position position;
 }THREAD_ARGS;
 
-typedef struct Point2D {
-  unsigned short y, x;
-}POINT_2D;
-
 unsigned char threadsCount;
 
 void init2DArena(ARENA* arena) {
@@ -106,7 +102,6 @@ void* taskNative(void* args) {
         else if (trueY == arena->sizeY) trueY = 0;
         if (arena->field[trueY][trueX] == 1) ++neighborsCount;
       }
-      arena->buffer[i][j] = 0;
       if (neighborsCount == 3 || (neighborsCount == 2 && arena->field[i][j])) {
         arena->buffer[i][j] = 1;
         ++aliveCount;
@@ -152,7 +147,6 @@ void* taskSIMD(void* args) {
       for (unsigned char k = 0; k != DIRECTION_COUNT; ++k) {
         if (arena->field[yValues[k]][xValues[k]] == 0) --neighborsCount;
       }
-      arena->buffer[i][j] = 0;
       if (neighborsCount == 3 || (neighborsCount == 2 && arena->field[i][j])) {
         arena->buffer[i][j] = 1;
         ++aliveCount;
@@ -215,6 +209,7 @@ bool tickArena(ARENA* arena) {
   }
   bool isAlive = arena->aliveCount && isArenaUnstable(arena);
   copyBuffer2Arena(arena);
+  clearArenaBuffer(arena, 0, arena->sizeY); // rewrite async
   free(threadsArgs);
   free(threads);
   return isAlive;
@@ -232,11 +227,18 @@ void play(char* mapPath) {
   arena.sizeY = reqArenaSize.y < terminal.y ? terminal.y : reqArenaSize.y;
   arena.sizeX = reqArenaSize.x < terminal.x ? terminal.x : reqArenaSize.x;
   init2DArena(&arena);
+  updateWindowInfo(&arena);
   fscanArena(inputFp, &arena, &reqArenaSize);
   fclose(inputFp);
-  while (isAlive && getch() != 'q') {
+  while (isAlive) {
+    static struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     isAlive = tickArena(&arena);
+    if (inputWorker(getch())) break;
     drawNewFrame(&arena, tickCount++, isAlive);
+    clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+    long delta_ms = ((end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000) / 1000;
+    milliSleep((1000 - delta_ms) / FPS);
   }
   destroyArena(&arena);
 }

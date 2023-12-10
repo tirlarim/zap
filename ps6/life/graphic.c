@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "graphic.h"
 #include "../utils/utils.h"
 
 typedef struct Terminal {
-  unsigned short sizeY, sizeX, availableSizeX, availableSizeY;
+  struct Point2D size, availableSize, arenaSize, position;
 }TERMINAL;
 
 struct winsize terminalSize;
@@ -66,32 +67,61 @@ void drawLogo() {
 
 void printArena(ARENA* arena, unsigned int step) {
   clear();
-  mvprintw(0, 0, "Step: %d, alive: %u\n", step, arena->aliveCount);
-  for (unsigned short i = 0; i < terminalWindow.availableSizeY; ++i) {
-    for (unsigned short j = 0; j < terminalWindow.availableSizeX; ++j) {
-      printw(i < arena->sizeY && j < arena->sizeX ? arena->field[i][j] == 1 ? "x" : " " : " ");
+  attron(COLOR_PAIR(RED_ON_BLACK) | A_BOLD);
+  mvprintw(0, 0, "X: %d Y: %d, Step: %u, alive: %u, fps: %u\n",
+           terminalWindow.position.x, terminalWindow.position.y, step, arena->aliveCount, FPS);
+  attroff(COLOR_PAIR(RED_ON_BLACK) | A_BOLD);
+  for (unsigned int i = 0; i < terminalWindow.availableSize.y; ++i) {
+    for (unsigned int j = 0; j < terminalWindow.availableSize.x; ++j) {
+      printw(arena->field[i+terminalWindow.position.y][j+terminalWindow.position.x] == 1 ? "x" : " ");
     }
   }
 }
 
 void drawNewFrame(ARENA* arena, unsigned int tickCount, bool isAlive) {
+  flushinp();
   if (isAlive) printArena(arena, tickCount);
   else printw("End life step %u\n", tickCount);
   refresh();
-  milliSleep(1000 / FPS);
 }
 
-void updateWindowInfo() {
+void updateWindowInfo(ARENA* arena) {
   unsigned short usedRows = 1;
   unsigned short usedColumns = 0;
-  terminalWindow.sizeY = terminalSize.ws_row;
-  terminalWindow.sizeX = terminalSize.ws_col;
-  terminalWindow.availableSizeY = terminalSize.ws_row-usedRows;
-  terminalWindow.availableSizeX = terminalSize.ws_col-usedColumns;
+  terminalWindow.size.y = terminalSize.ws_row;
+  terminalWindow.size.x = terminalSize.ws_col;
+  terminalWindow.availableSize.y = terminalSize.ws_row-usedRows;
+  terminalWindow.availableSize.x = terminalSize.ws_col-usedColumns;
+  terminalWindow.arenaSize.y = arena->sizeY;
+  terminalWindow.arenaSize.x = arena->sizeX;
 }
 
 void getTerminalSize(unsigned short* sizeY, unsigned short* sizeX) {
-  updateWindowInfo();
-  *sizeY = terminalWindow.availableSizeY;
-  *sizeX = terminalWindow.availableSizeX;
+  *sizeY = terminalSize.ws_row;
+  *sizeX = terminalSize.ws_col;
+}
+
+bool inputWorker(int key) {
+  switch (key) {
+    case KEY_EXIT_GAME:
+      return true;
+    case KEY_MOVE_UP:
+      if (terminalWindow.position.y)
+        --terminalWindow.position.y;
+      break;
+    case KEY_MOVE_DOWN:
+      if (terminalWindow.position.y + terminalWindow.availableSize.y <= terminalWindow.arenaSize.y)
+        ++terminalWindow.position.y;
+      break;
+    case KEY_MOVE_LEFT:
+      if (terminalWindow.position.x)
+        --terminalWindow.position.x;
+      break;
+    case KEY_MOVE_RIGHT:
+      if (terminalWindow.position.x + terminalWindow.availableSize.x <= terminalWindow.arenaSize.x)
+        ++terminalWindow.position.x;
+      break;
+    default: break;
+  }
+  return false;
 }

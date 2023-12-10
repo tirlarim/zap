@@ -13,6 +13,10 @@ typedef struct Arena {
   int sizeY, sizeX;
 }ARENA;
 
+typedef struct Point2D {
+  unsigned short y, x;
+}POINT_2D;
+
 void play(char* mapPath);
 
 #endif // ZAP_2023_8748_ENGINE_H
