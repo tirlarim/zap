@@ -19,6 +19,8 @@ typedef struct ThreadArgs {
 }THREAD_ARGS;
 
 unsigned char threadsCount;
+pthread_t* threads;
+THREAD_ARGS* threadsArgs;
 
 void init2DArena(ARENA* arena) {
   arena->field = (unsigned char**)malloc(arena->sizeY * sizeof(*arena->field));
@@ -36,6 +38,30 @@ void destroyArena(ARENA* arena) {
   }
   free(arena->field);
   free(arena->buffer);
+}
+
+void threadsPrepare(ARENA* arena) {
+  unsigned int blocksPerThread; // possibly needs UINT64
+  threadsArgs = (THREAD_ARGS*)malloc(threadsCount * sizeof(THREAD_ARGS));
+  threads = (pthread_t*)malloc(threadsCount * sizeof(pthread_t));
+  blocksPerThread = (arena->sizeY * arena->sizeX) / threadsCount;
+  for (int i = 0; i < threadsCount; ++i) {
+    unsigned int absoluteStartIndex = blocksPerThread * i;
+    unsigned int absoluteEndIndex = absoluteStartIndex + blocksPerThread - 1;
+    threadsArgs[i].position.startY = absoluteStartIndex / arena->sizeX;
+    threadsArgs[i].position.startX = absoluteStartIndex % arena->sizeX;
+    threadsArgs[i].position.endY = absoluteEndIndex / arena->sizeX;
+    threadsArgs[i].position.endX = absoluteEndIndex % arena->sizeX + 1; // < n
+    threadsArgs[i].arena = arena;
+    threadsArgs[i].aliveCount = 0;
+  }
+  threadsArgs[threadsCount - 1].position.endY = arena->sizeY - 1;
+  threadsArgs[threadsCount - 1].position.endX = arena->sizeX;
+}
+
+void destroyThreadsData() {
+  free(threads);
+  free(threadsArgs);
 }
 
 bool isArenaUnstable(ARENA* arena) {
@@ -162,24 +188,6 @@ void* taskSIMD(void* args) {
 
 
 bool tickArena(ARENA* arena) {
-  pthread_t* threads;
-  THREAD_ARGS* threadsArgs;
-  unsigned int blocksPerThread; // possibly needs UINT64
-  threadsArgs = (THREAD_ARGS*)malloc(threadsCount * sizeof(THREAD_ARGS));
-  threads = (pthread_t*)malloc(threadsCount * sizeof(pthread_t));
-  blocksPerThread = (arena->sizeY * arena->sizeX) / threadsCount;
-  for (int i = 0; i < threadsCount; ++i) {
-    unsigned int absoluteStartIndex = blocksPerThread * i;
-    unsigned int absoluteEndIndex = absoluteStartIndex + blocksPerThread - 1;
-    threadsArgs[i].position.startY = absoluteStartIndex / arena->sizeX;
-    threadsArgs[i].position.startX = absoluteStartIndex % arena->sizeX;
-    threadsArgs[i].position.endY = absoluteEndIndex / arena->sizeX;
-    threadsArgs[i].position.endX = absoluteEndIndex % arena->sizeX + 1; // < n
-    threadsArgs[i].arena = arena;
-    threadsArgs[i].aliveCount = 0;
-  }
-  threadsArgs[threadsCount - 1].position.endY = arena->sizeY - 1;
-  threadsArgs[threadsCount - 1].position.endX = arena->sizeX;
   arena->aliveCount = 0;
 #ifdef DEBUG_LVL1
   printf("Block size: %d\n", blocksPerThread);
@@ -206,12 +214,11 @@ bool tickArena(ARENA* arena) {
       return EXIT_THREAD_JOIN_FAILURE;
     }
     arena->aliveCount+=threadsArgs[i].aliveCount;
+    threadsArgs[i].aliveCount = 0;
   }
   bool isAlive = arena->aliveCount && isArenaUnstable(arena);
   copyBuffer2Arena(arena);
   clearArenaBuffer(arena, 0, arena->sizeY); // rewrite async
-  free(threadsArgs);
-  free(threads);
   return isAlive;
 }
 
@@ -219,27 +226,32 @@ void play(char* mapPath) {
   ARENA arena = {};
   POINT_2D terminal = {}, reqArenaSize = {};
   FILE* inputFp = fopen(mapPath, "rt");
+  struct timespec start, end, sleepTime;
+  long sleepFrameTime = (1000000000 / FPS);
+  long elapsedNanosec;
   unsigned int tickCount = 0;
   bool isAlive = true;
+  sleepTime.tv_sec = 0;
   threadsCount = getNumberOfCores();
   getTerminalSize(&terminal.y, &terminal.x);
   fscanf(inputFp, "%hd %hd", &reqArenaSize.y, &reqArenaSize.x);
   arena.sizeY = reqArenaSize.y < terminal.y ? terminal.y : reqArenaSize.y;
   arena.sizeX = reqArenaSize.x < terminal.x ? terminal.x : reqArenaSize.x;
   init2DArena(&arena);
+  threadsPrepare(&arena);
   updateWindowInfo(&arena);
   fscanArena(inputFp, &arena, &reqArenaSize);
   fclose(inputFp);
   while (isAlive) {
-    static struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     isAlive = tickArena(&arena);
     if (inputWorker(getch())) break;
     drawNewFrame(&arena, tickCount++, isAlive);
     clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-    long delta_ms = ((end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000) / 1000;
-    milliSleep((1000 - delta_ms) / FPS);
+    elapsedNanosec = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
+    sleepTime.tv_nsec = sleepFrameTime - elapsedNanosec;
+    nanosleep(&sleepTime, NULL);
   }
+  destroyThreadsData();
   destroyArena(&arena);
 }
-

@@ -110,7 +110,7 @@ bool inputWorker(int key) {
         --terminalWindow.position.y;
       break;
     case KEY_MOVE_DOWN:
-      if (terminalWindow.position.y + terminalWindow.availableSize.y <= terminalWindow.arenaSize.y)
+      if (terminalWindow.position.y + terminalWindow.availableSize.y < terminalWindow.arenaSize.y)
         ++terminalWindow.position.y;
       break;
     case KEY_MOVE_LEFT:

@@ -15,6 +15,8 @@
 #define KEY_MOVE_DOWN 's'
 #define KEY_MOVE_LEFT 'a'
 #define KEY_MOVE_RIGHT 'd'
+#define KEY_UP_TPF 'e'
+#define KEY_DOWN_TPF 'q'
 
 enum Colors {
   RED_ON_BLACK = 1,
