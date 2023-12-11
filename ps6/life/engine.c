@@ -77,7 +77,7 @@ void copyBuffer2Arena(ARENA* arena) {
 
 void clearArenaBuffer(ARENA* arena, unsigned int startPos, unsigned int endPos) {
   for (unsigned int i = startPos; i < endPos; ++i)
-    memset(arena->buffer[i], 0, arena->sizeX * sizeof(*arena->buffer[i]));
+    bzero(arena->buffer[i], arena->sizeX * sizeof(*arena->buffer[i]));
 }
 
 void scanArena(ARENA* arena) {

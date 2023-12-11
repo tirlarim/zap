@@ -6,7 +6,7 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_C_FLAGS "-Werror -Wall")
 set(CMAKE_C_FLAGS "-Werror=vla -march=native")
 
-set(currentProblemSet 6)
+set(currentProblemSet 7)
 add_compile_definitions(DEBUG_FLAG)
 
 if (currentProblemSet EQUAL 1)

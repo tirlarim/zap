@@ -73,7 +73,7 @@ void drawTextLogo() {
   FILE* fp = fopen(TEXT_LOGO_PATH, "rt");
   if (!fp) {
     if (has_colors()) attron(COLOR_PAIR(RED_ON_BLACK) | A_BOLD);
-    printw("Unable to open logo file -> Path: %s", LOGO_PATH);
+    printw("Unable to open logo file -> Path: %s", TEXT_LOGO_PATH);
     if (has_colors()) attroff(COLOR_PAIR(RED_ON_BLACK) | A_BOLD);
   } else {
     POINT_2D logoSize;
