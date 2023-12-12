@@ -16,13 +16,14 @@ unsigned long getWordLen(const char* word) {
 
 long getWordIndex(FILE* fp, const char* word) {
   long index = 0;
-  char wordBf = 0, bfIndex = 0;
+  char wordBf = 0;
+  unsigned int bfIndex = 0;
   bool possibleWord = true;
   unsigned long wordLen = getWordLen(word);
   do {
     if (bfIndex == wordLen) return index - bfIndex;
     ++index;
-    wordBf = (char)getc(fp);
+    wordBf = (char)fgetc(fp);
     if (wordBf == SEPARATOR) {
       possibleWord = true;
       continue;

@@ -64,7 +64,8 @@ void task(char* path) {
   }
   fclose(fileInput);
   FILE* fileOutput = fopen(path, "w");
-  for (int i = uintToString(count, ans); i >= 0; --i) fputc(ans[i], fileOutput);
+  if (!count) fputc('0', fileOutput);
+  else for (int i = uintToString(count, ans); i >= 0; --i) fputc(ans[i], fileOutput);
   fclose(fileOutput);
 }
 
