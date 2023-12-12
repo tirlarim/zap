@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define FILENAME_INPUT "test.txt"
-#define FILENAME_OUTPUT "ans.txt"
+//#define FILENAME_INPUT "test.txt"
+//#define FILENAME_OUTPUT "ans.txt"
 #define WORD_LEN 32
 #define SEARCH_WORD "ananas"
 
