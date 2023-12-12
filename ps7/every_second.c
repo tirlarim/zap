@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define FILENAME_INPUT "test.txt"
-#define FILENAME_OUTPUT "ans.txt"
+//#define FILENAME_INPUT "test.txt"
+//#define FILENAME_OUTPUT "ans.txt"
 #define WORD_LEN 32
 #define START_WORD "START"
 #define END_WORD "STOP"
@@ -45,12 +45,13 @@ void task(char* fileNameInput, char* filenameOutput) {
   long startIndex = getWordIndex(fileInput, START_WORD),
   endIndex = getWordIndex(fileInput, END_WORD)+startIndex;
   fclose(fileInput);
-  char word[WORD_LEN] = {0}, bfIndex = 0;
-  fileInput = fopen(FILENAME_INPUT, "r");
+  char word[WORD_LEN] = {0};
+  unsigned int bfIndex = 0;
+  fileInput = fopen(fileNameInput, "r");
   do {
-    word[bfIndex] = (char)getc(fileInput); // -1 to hide space
+    word[bfIndex] = (char)fgetc(fileInput); // -1 to hide space
     if (flag && fileIndex > startIndex + startWordLen && fileIndex < endIndex + startWordLen -1)
-      putc(word[bfIndex], fileOutput);
+      fputc(word[bfIndex], fileOutput);
     if (word[bfIndex] == SEPARATOR) flag = !flag;
     ++fileIndex;
   } while (word[bfIndex] != EOF);
