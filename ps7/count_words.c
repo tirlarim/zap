@@ -33,17 +33,19 @@ unsigned int strLength(const char* str) {
 
 bool strCompare2(const char* str1, const char* str2, int endPont) {
   for (int i = 0; i < SEARCH_WORD_LEN; ++i) { // i = offset
-    int index = normalizeIndex((endPont+1)-SEARCH_WORD_LEN + i, SEARCH_WORD_LEN+1);
+    int index = normalizeIndex(endPont - SEARCH_WORD_LEN + i, SEARCH_WORD_LEN + 1);
+    printf("%c[%d] - %c[%d]\n", str1[index], index, str2[i], i);
     if (str1[index] != str2[i]) {
       return false;
     }
   }
+  printf("OK\n");
   return true;
 }
 
 void moveBack(char* str1) {
-  for (int i = 1; i < SEARCH_WORD_LEN+1; ++i) {
-    str1[i-1] = str1[i];
+  for (int i = 1; i < SEARCH_WORD_LEN + 1; ++i) {
+    str1[i - 1] = str1[i];
   }
 }
 
@@ -59,7 +61,7 @@ int uintToString(unsigned int number, char* str) {
 void task(char* pathInput, char* pathOutput) {
   FILE* fileInput = fopen(pathInput, "r");
   const char wordMain[SEARCH_WORD_LEN] = SEARCH_WORD;
-  char wordBf[SEARCH_WORD_LEN+1] = {0}, ans[SEARCH_WORD_LEN+1] = {0};
+  char wordBf[SEARCH_WORD_LEN + 1] = {0}, ans[SEARCH_WORD_LEN + 1] = {0};
   unsigned int count = 0;
   if (fileInput == NULL) {
     fclose(fileInput);
@@ -67,8 +69,8 @@ void task(char* pathInput, char* pathOutput) {
     return;
   }
 // read first 7
-  for (int i = 0; i < SEARCH_WORD_LEN; ++i) {
-    wordBf[i] = normalizeSymbol((char)fgetc(fileInput));
+  for (int i = 0; i <= SEARCH_WORD_LEN; ++i) {
+    wordBf[i] = normalizeSymbol((char) fgetc(fileInput));
     if (wordBf[i] == EOF) {
       fclose(fileInput);
       FILE* fileOutput = fopen(pathOutput, "w");
@@ -77,11 +79,9 @@ void task(char* pathInput, char* pathOutput) {
     }
   }
   while (true) {
-    if (strCompare2(wordBf, wordMain, 6)) {
-      count++;
-    }
+    if (strCompare(wordBf, wordMain)) ++count;
     moveBack(wordBf);
-    wordBf[6] = normalizeSymbol((char)fgetc(fileInput));
+    wordBf[6] = normalizeSymbol((char) fgetc(fileInput));
     if (wordBf[6] == EOF) break;
   }
   fclose(fileInput);
