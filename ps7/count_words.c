@@ -63,7 +63,9 @@ int uintToString(unsigned int number, char* str) {
 }
 
 void task(char* pathInput, char* pathOutput) {
-  FILE* fileInput = fopen(pathInput, "r");
+  FILE* fileInput = NULL;
+  if (pathInput != NULL) fileInput = fopen(pathInput, "r");
+  else return;
   const char wordMain[SEARCH_WORD_LEN] = SEARCH_WORD;
   char wordBf[SEARCH_WORD_LEN + 1] = {0}, ans[SEARCH_WORD_LEN + 1] = {0};
   unsigned int count = 0;
@@ -101,8 +103,6 @@ void task(char* pathInput, char* pathOutput) {
 }
 
 int main(int argc, char** argv) {
-  if (argc < 2) return 1;
-  else if (argc == 2) task(argv[1], argv[1]);
-  else if (argc == 3) task(argv[1], argv[2]);
+  task(argv[1], argv[1]);
   return 0;
 }
