@@ -6,6 +6,11 @@
 //#define FILENAME_OUTPUT "ans.txt"
 #define WORD_LEN 32
 #define SEARCH_WORD "ananas"
+#define SEARCH_WORD_LEN 6
+
+unsigned int normalizeIndex(int index, int limit) {
+  return ((index % limit) + limit) % limit;
+}
 
 char normalizeSymbol(const char symbol) {
   if (symbol >= 'A' && symbol <= 'Z') return symbol + 32;
@@ -26,6 +31,22 @@ unsigned int strLength(const char* str) {
   for (unsigned int i = 0; true; ++i) if (str[i] == '\0') return i;
 }
 
+bool strCompare2(const char* str1, const char* str2, int endPont) {
+  for (int i = 0; i < SEARCH_WORD_LEN; ++i) { // i = offset
+    int index = normalizeIndex((endPont+1)-SEARCH_WORD_LEN + i, SEARCH_WORD_LEN+1);
+    if (str1[index] != str2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void moveBack(char* str1) {
+  for (int i = 1; i < SEARCH_WORD_LEN+1; ++i) {
+    str1[i-1] = str1[i];
+  }
+}
+
 int uintToString(unsigned int number, char* str) {
   int i = 0;
   for (; i < WORD_LEN && number > 0; ++i) {
@@ -35,41 +56,47 @@ int uintToString(unsigned int number, char* str) {
   return --i;
 }
 
-void task(char* path) {
-  FILE* fileInput = fopen(path, "r");
-  const char wordMain[WORD_LEN] = SEARCH_WORD;
-  char wordBf[WORD_LEN] = {0}, ans[WORD_LEN] = {0};
-  unsigned int inputWordLen = strLength(wordMain), count = 0, bufferIndex = 0;
-  bool magicFlag = false;
+void task(char* pathInput, char* pathOutput) {
+  FILE* fileInput = fopen(pathInput, "r");
+  const char wordMain[SEARCH_WORD_LEN] = SEARCH_WORD;
+  char wordBf[SEARCH_WORD_LEN+1] = {0}, ans[SEARCH_WORD_LEN+1] = {0};
+  unsigned int count = 0;
   if (fileInput == NULL) {
     fclose(fileInput);
     perror("Error in opening file");
     return;
   }
-  while (true) {
-    wordBf[bufferIndex] = normalizeSymbol((char)fgetc(fileInput));
-    if (wordBf[bufferIndex] == EOF) break;
-    if (wordBf[bufferIndex] == wordMain[bufferIndex]) {
-      magicFlag = true;
-      ++bufferIndex;
-      if (bufferIndex == inputWordLen) {
-        magicFlag = false;
-        ++count;
-      }
-    } else magicFlag = false;
-    if (!magicFlag) {
-      for (int i = 0; i < WORD_LEN; ++i) wordBf[i] = 0;
-      bufferIndex = 0;
+// read first 7
+  for (int i = 0; i < SEARCH_WORD_LEN; ++i) {
+    wordBf[i] = normalizeSymbol((char)fgetc(fileInput));
+    if (wordBf[i] == EOF) {
+      fclose(fileInput);
+      FILE* fileOutput = fopen(pathOutput, "w");
+      fputc('0', fileOutput);
+      fclose(fileOutput);
     }
   }
+  while (true) {
+    if (strCompare2(wordBf, wordMain, 6)) {
+      count++;
+    }
+    moveBack(wordBf);
+    wordBf[6] = normalizeSymbol((char)fgetc(fileInput));
+    if (wordBf[6] == EOF) break;
+  }
   fclose(fileInput);
-  FILE* fileOutput = fopen(path, "w");
+  FILE* fileOutput = fopen(pathOutput, "w");
   if (!count) fputc('0', fileOutput);
   else for (int i = uintToString(count, ans); i >= 0; --i) fputc(ans[i], fileOutput);
   fclose(fileOutput);
+#ifdef DEBUG_FLAG
+  printf("%d\n", count);
+#endif
 }
 
 int main(int argc, char** argv) {
-  task(argv[1]);
+  if (argc < 2) return 1;
+  else if (argc == 2) task(argv[1], argv[1]);
+  else if (argc == 3) task(argv[1], argv[2]);
   return 0;
 }
