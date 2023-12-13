@@ -33,13 +33,17 @@ unsigned int strLength(const char* str) {
 
 bool strCompare2(const char* str1, const char* str2, int endPont) {
   for (int i = 0; i < SEARCH_WORD_LEN; ++i) { // i = offset
-    int index = normalizeIndex(endPont - SEARCH_WORD_LEN + i, SEARCH_WORD_LEN + 1);
-    printf("%c[%d] - %c[%d]\n", str1[index], index, str2[i], i);
+    unsigned int index = normalizeIndex(endPont - SEARCH_WORD_LEN + i, SEARCH_WORD_LEN + 1);
+//#ifdef DEBUG_FLAG
+//    printf("%c[%d] - %c[%d]\n", str1[index], index, str2[i], i);
+//#endif
     if (str1[index] != str2[i]) {
       return false;
     }
   }
-  printf("OK\n");
+//#ifdef DEBUG_FLAG
+//  printf("OK\n");
+//#endif
   return true;
 }
 
@@ -79,7 +83,7 @@ void task(char* pathInput, char* pathOutput) {
     }
   }
   while (true) {
-    if (strCompare(wordBf, wordMain)) ++count;
+    if (strCompare2(wordBf, wordMain, SEARCH_WORD_LEN)) ++count;
     moveBack(wordBf);
     wordBf[6] = normalizeSymbol((char) fgetc(fileInput));
     if (wordBf[6] == EOF) break;
@@ -89,9 +93,9 @@ void task(char* pathInput, char* pathOutput) {
   if (!count) fputc('0', fileOutput);
   else for (int i = uintToString(count, ans); i >= 0; --i) fputc(ans[i], fileOutput);
   fclose(fileOutput);
-#ifdef DEBUG_FLAG
-  printf("%d\n", count);
-#endif
+//#ifdef DEBUG_FLAG
+//  printf("%d\n", count);
+//#endif
 }
 
 int main(int argc, char** argv) {
