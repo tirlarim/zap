@@ -84,6 +84,7 @@ void task(char* pathInput, char* pathOutput) {
       FILE* fileOutput = fopen(pathOutput, "w");
       fputc('0', fileOutput);
       fclose(fileOutput);
+      return;
     }
   }
   while (true) {
