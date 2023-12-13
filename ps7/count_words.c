@@ -69,7 +69,9 @@ void task(char* pathInput, char* pathOutput) {
   unsigned int count = 0;
   if (fileInput == NULL) {
     fclose(fileInput);
-    perror("Error in opening file");
+    FILE* fileOutput = fopen(pathOutput, "w");
+    fputc('0', fileOutput);
+    fclose(fileOutput);
     return;
   }
 // read first 7
